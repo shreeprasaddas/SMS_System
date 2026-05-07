@@ -1,0 +1,17 @@
+{
+  "name": "sms-mobile",
+  "version": "1.0.0",
+  "description": "School Management System - Mobile App (React Native)",
+  "main": "App.jsx",
+  "type": "module",
+  "scripts": {
+    "dev": "expo start",
+    "build": "eas build",
+    "preview": "expo preview"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-native": "^0.73.0",
+    "expo": "^50.0.0"
+  }
+}

@@ -1,0 +1,178 @@
+/**
+ * Application Constants
+ * Shared enum values and constants
+ */
+
+// User Roles (11 total)
+const USER_ROLES = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  PRINCIPAL: 'PRINCIPAL',
+  VICE_PRINCIPAL: 'VICE_PRINCIPAL',
+  TEACHER: 'TEACHER',
+  STUDENT: 'STUDENT',
+  PARENT: 'PARENT',
+  ACCOUNTANT: 'ACCOUNTANT',
+  LIBRARIAN: 'LIBRARIAN',
+  ADMISSION_OFFICER: 'ADMISSION_OFFICER',
+  HR_MANAGER: 'HR_MANAGER',
+  TRANSPORT_COORDINATOR: 'TRANSPORT_COORDINATOR',
+  RECEPTIONIST: 'RECEPTIONIST',
+};
+
+const ROLE_ARRAY = Object.values(USER_ROLES);
+
+// Student Status
+const STUDENT_STATUS = {
+  ACTIVE: 'ACTIVE',
+  INACTIVE: 'INACTIVE',
+  GRADUATED: 'GRADUATED',
+  TRANSFERRED: 'TRANSFERRED',
+  LEFT: 'LEFT',
+};
+
+// Attendance Status
+const ATTENDANCE_STATUS = {
+  PRESENT: 'PRESENT',
+  ABSENT: 'ABSENT',
+  LATE: 'LATE',
+  HALF_DAY: 'HALF_DAY',
+  HOLIDAY: 'HOLIDAY',
+  LEAVE: 'LEAVE',
+};
+
+// Payment Status
+const PAYMENT_STATUS = {
+  PENDING: 'PENDING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+};
+
+// Leave Status
+const LEAVE_STATUS = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED',
+};
+
+// Exam Type
+const EXAM_TYPE = {
+  UNIT_TEST: 'UNIT_TEST',
+  HALF_YEARLY: 'HALF_YEARLY',
+  ANNUAL: 'ANNUAL',
+  PRACTICAL: 'PRACTICAL',
+  PROJECT: 'PROJECT',
+  BOARD: 'BOARD',
+};
+
+// Gender
+const GENDER = {
+  MALE: 'MALE',
+  FEMALE: 'FEMALE',
+  OTHER: 'OTHER',
+};
+
+// Cache Keys
+const CACHE_KEYS = {
+  USER: (id) => `user:${id}`,
+  STUDENT: (id) => `student:${id}`,
+  SCHOOL: (id) => `school:${id}`,
+  CLASS_ROSTER: (classId) => `class:${classId}:roster`,
+  GRADES: (studentId, examId) => `grades:${studentId}:${examId}`,
+  ATTENDANCE: (studentId, month) => `attendance:${studentId}:${month}`,
+  SESSIONS: (userId) => `sessions:${userId}:*`,
+};
+
+// Error Codes
+const ERROR_CODES = {
+  VALIDATION_ERROR: 'VALIDATION_ERROR',
+  UNAUTHORIZED: 'UNAUTHORIZED',
+  FORBIDDEN: 'FORBIDDEN',
+  NOT_FOUND: 'NOT_FOUND',
+  CONFLICT: 'CONFLICT',
+  INTERNAL_ERROR: 'INTERNAL_ERROR',
+  BAD_GATEWAY: 'BAD_GATEWAY',
+  SERVICE_UNAVAILABLE: 'SERVICE_UNAVAILABLE',
+};
+
+// HTTP Status Codes
+const HTTP_STATUS = {
+  OK: 200,
+  CREATED: 201,
+  BAD_REQUEST: 400,
+  UNAUTHORIZED: 401,
+  FORBIDDEN: 403,
+  NOT_FOUND: 404,
+  CONFLICT: 409,
+  UNPROCESSABLE_ENTITY: 422,
+  TOO_MANY_REQUESTS: 429,
+  INTERNAL_SERVER_ERROR: 500,
+  SERVICE_UNAVAILABLE: 503,
+};
+
+// Email Templates
+const EMAIL_TEMPLATES = {
+  WELCOME: 'welcome',
+  PASSWORD_RESET: 'password-reset',
+  FEE_REMINDER: 'fee-reminder',
+  ATTENDANCE_REPORT: 'attendance-report',
+  GRADE_PUBLISHED: 'grade-published',
+  ADMISSION_CONFIRMATION: 'admission-confirmation',
+};
+
+// Notification Types
+const NOTIFICATION_TYPES = {
+  GENERAL: 'GENERAL',
+  ATTENDANCE: 'ATTENDANCE',
+  GRADES: 'GRADES',
+  FEES: 'FEES',
+  ANNOUNCEMENT: 'ANNOUNCEMENT',
+  ASSIGNMENT: 'ASSIGNMENT',
+  EXAM: 'EXAM',
+};
+
+// Socket Events
+const SOCKET_EVENTS = {
+  ATTENDANCE_MARKED: 'attendance:marked',
+  GRADE_PUBLISHED: 'grade:published',
+  NOTIFICATION_RECEIVED: 'notification:received',
+  MESSAGE_RECEIVED: 'message:received',
+  USER_ONLINE: 'user:online',
+  USER_OFFLINE: 'user:offline',
+};
+
+// Pagination
+const PAGINATION = {
+  DEFAULT_LIMIT: 20,
+  MAX_LIMIT: 100,
+  MIN_LIMIT: 1,
+};
+
+// Date Formats
+const DATE_FORMATS = {
+  DISPLAY: 'DD MMM YYYY',
+  DISPLAY_WITH_TIME: 'DD MMM YYYY hh:mm A',
+  ISO_DATE: 'YYYY-MM-DD',
+  ISO_DATETIME: 'YYYY-MM-DDTHH:mm:ss',
+};
+
+module.exports = {
+  USER_ROLES,
+  ROLE_ARRAY,
+  STUDENT_STATUS,
+  ATTENDANCE_STATUS,
+  PAYMENT_STATUS,
+  LEAVE_STATUS,
+  EXAM_TYPE,
+  GENDER,
+  CACHE_KEYS,
+  ERROR_CODES,
+  HTTP_STATUS,
+  EMAIL_TEMPLATES,
+  NOTIFICATION_TYPES,
+  SOCKET_EVENTS,
+  PAGINATION,
+  DATE_FORMATS,
+};

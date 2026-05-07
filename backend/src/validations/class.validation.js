@@ -1,0 +1,52 @@
+/**
+ * Class Validation
+ * Joi schemas for class management endpoints
+ */
+
+const Joi = require('joi');
+
+const createClassSchema = Joi.object({
+  name: Joi.string().required().trim(),
+  code: Joi.string().required().trim().uppercase(),
+  classNumber: Joi.number().integer().required(),
+  academicYear: Joi.string().required(),
+  stream: Joi.string(),
+  sections: Joi.array().items(Joi.string()),
+  subjects: Joi.array().items(Joi.string()),
+  capacity: Joi.number().integer().min(1).default(50),
+  description: Joi.string(),
+});
+
+const updateClassSchema = Joi.object({
+  name: Joi.string().trim(),
+  description: Joi.string(),
+  sections: Joi.array().items(Joi.string()),
+  subjects: Joi.array().items(Joi.string()),
+  capacity: Joi.number().integer().min(1),
+  status: Joi.string().valid('ACTIVE', 'INACTIVE', 'ARCHIVED'),
+}).min(1);
+
+const assignClassTeacherSchema = Joi.object({
+  teacherId: Joi.string().required(),
+});
+
+const addSectionSchema = Joi.object({
+  sectionId: Joi.string().required(),
+});
+
+const assignSubjectSchema = Joi.object({
+  subjectId: Joi.string().required(),
+});
+
+const updateStrengthSchema = Joi.object({
+  strength: Joi.number().integer().min(0).required(),
+});
+
+module.exports = {
+  createClassSchema,
+  updateClassSchema,
+  assignClassTeacherSchema,
+  addSectionSchema,
+  assignSubjectSchema,
+  updateStrengthSchema,
+};

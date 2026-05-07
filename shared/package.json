@@ -1,0 +1,14 @@
+{
+  "name": "sms-shared",
+  "version": "1.0.0",
+  "description": "School Management System - Shared Utilities",
+  "main": "index.js",
+  "type": "module",
+  "exports": {
+    "./constants": "./constants/index.js",
+    "./types": "./types/index.js",
+    "./utilities": "./utilities/index.js",
+    "./validations": "./validations/index.js"
+  },
+  "dependencies": {}
+}
