@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetAssignmentByIdQuery, useGetAssignmentSubmissionsQuery } from '../../store/api/assignmentApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetAssignmentByIdQuery, useGetAssignmentSubmissionsQuery } from '@/store/api/assignmentApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function AssignmentDetailPage() {
   const { assignmentId } = useParams();

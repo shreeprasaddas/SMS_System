@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetAssignmentSubmissionsQuery, useGradeSubmissionMutation } from '../../store/api/assignmentApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetAssignmentSubmissionsQuery, useGradeSubmissionMutation } from '@/store/api/assignmentApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function GradeSubmissionsPage() {

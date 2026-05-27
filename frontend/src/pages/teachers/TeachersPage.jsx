@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetTeachersQuery, useDeleteTeacherMutation } from '../../store/api/teacherApi.js';
-import { TeacherCard, TeacherForm } from '../../components/teachers/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetTeachersQuery, useDeleteTeacherMutation } from '@/store/api/teacherApi.js';
+import { TeacherCard, TeacherForm } from '@/components/teachers/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function TeachersPage() {
@@ -36,8 +36,8 @@ function TeachersPage() {
     }
   };
 
-  const teachers = data?.data || [];
-  const pagination = data?.pagination || {};
+  const teachers = data?.data?.teachers || [];
+  const pagination = data?.data?.pagination || {};
 
   return (
     <div className="space-y-6">

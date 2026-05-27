@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGetStudentAttendanceQuery } from '../../store/api/attendanceApi.js';
-import { Spinner, Card } from '../../components/common/index.js';
+import { useGetStudentAttendanceQuery } from '@/store/api/attendanceApi.js';
+import { Spinner, Card } from '@/components/common/index.js';
 
 function StudentAttendancePage() {
   const [studentId, setStudentId] = useState('');

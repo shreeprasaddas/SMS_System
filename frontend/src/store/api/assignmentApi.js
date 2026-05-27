@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { loginSuccess, logout } from '../slices/authSlice.js';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: '/api/v1',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
   prepareHeaders: (headers, { getState }) => {
     const token = getState()?.auth?.token;
     if (token) {
@@ -11,9 +12,37 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 401) {
+    const refreshResult = await baseQuery(
+      { url: '/auth/refresh-token', method: 'POST' },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult.data) {
+      const { token, refreshToken } = refreshResult.data.data;
+      api.dispatch(
+        loginSuccess({
+          user: api.getState().auth.user,
+          token,
+          refreshToken,
+        })
+      );
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+    }
+  }
+
+  return result;
+};
+
 export const assignmentApi = createApi({
   reducerPath: 'assignmentApi',
-  baseQuery,
+  baseQuery: baseQueryWithReauth,
   tagTypes: ['Assignment'],
   endpoints: (builder) => ({
     // Get all assignments with pagination and filters
@@ -82,21 +111,27 @@ export const assignmentApi = createApi({
       invalidatesTags: ['Assignment'],
     }),
 
-    // Get assignments by class
-    getAssignmentsByClass: builder.query({
-      query: (classId) => `/assignments/class/${classId}`,
-      providesTags: ['Assignment'],
+    // Publish assignment
+    publishAssignment: builder.mutation({
+      query: (id) => ({
+        url: `/assignments/${id}/publish`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Assignment'],
     }),
 
-    // Get assignments by subject
-    getAssignmentsBySubject: builder.query({
-      query: (subjectId) => `/assignments/subject/${subjectId}`,
-      providesTags: ['Assignment'],
+    // Close assignment
+    closeAssignment: builder.mutation({
+      query: (id) => ({
+        url: `/assignments/${id}/close`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Assignment'],
     }),
 
     // Get assignment statistics
-    getAssignmentStats: builder.query({
-      query: () => '/assignments/stats',
+    getAssignmentStatistics: builder.query({
+      query: (id) => `/assignments/${id}/statistics`,
       providesTags: ['Assignment'],
     }),
 
@@ -113,27 +148,58 @@ export const assignmentApi = createApi({
       ],
     }),
 
-    // Grade assignment submission
-    gradeSubmission: builder.mutation({
-      query: ({ assignmentId, submissionId, marks, feedback }) => ({
-        url: `/assignments/${assignmentId}/submissions/${submissionId}/grade`,
-        method: 'POST',
-        body: { marks, feedback },
-      }),
-      invalidatesTags: ['Assignment'],
-    }),
-
     // Get assignment submissions
     getAssignmentSubmissions: builder.query({
       query: (assignmentId) => `/assignments/${assignmentId}/submissions`,
       providesTags: ['Assignment'],
     }),
 
-    // Get assignment report
+    // Get student's submissions
+    getStudentSubmissions: builder.query({
+      query: ({ assignmentId, studentId }) =>
+        `/assignments/${assignmentId}/students/${studentId}/submissions`,
+      providesTags: ['Assignment'],
+    }),
+
+    // Evaluate submission
+    evaluateSubmission: builder.mutation({
+      query: ({ submissionId, ...data }) => ({
+        url: `/assignments/submissions/${submissionId}/evaluate`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Assignment'],
+    }),
+
+    // ==================== LEGACY COMPAT ====================
+    getAssignmentsByClass: builder.query({
+      query: (classId) => `/assignments?class=${classId}`,
+      providesTags: ['Assignment'],
+    }),
+
+    getAssignmentsBySubject: builder.query({
+      query: (subjectId) => `/assignments?subject=${subjectId}`,
+      providesTags: ['Assignment'],
+    }),
+
+    getAssignmentStats: builder.query({
+      query: () => '/assignments?limit=1', // Get just count
+      providesTags: ['Assignment'],
+    }),
+
+    gradeSubmission: builder.mutation({
+      query: ({ assignmentId, submissionId, marks, feedback }) => ({
+        url: `/assignments/submissions/${submissionId}/evaluate`,
+        method: 'POST',
+        body: { marks, feedback },
+      }),
+      invalidatesTags: ['Assignment'],
+    }),
+
     getAssignmentReport: builder.query({
       query: (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
-        return `/assignments/report${queryString ? '?' + queryString : ''}`;
+        return `/assignments${queryString ? '?' + queryString : ''}`;
       },
       providesTags: ['Assignment'],
     }),
@@ -147,11 +213,17 @@ export const {
   useUpdateAssignmentMutation,
   usePatchAssignmentMutation,
   useDeleteAssignmentMutation,
+  usePublishAssignmentMutation,
+  useCloseAssignmentMutation,
+  useGetAssignmentStatisticsQuery,
+  useSubmitAssignmentMutation,
+  useGetAssignmentSubmissionsQuery,
+  useGetStudentSubmissionsQuery,
+  useEvaluateSubmissionMutation,
+  // Legacy compat
   useGetAssignmentsByClassQuery,
   useGetAssignmentsBySubjectQuery,
   useGetAssignmentStatsQuery,
-  useSubmitAssignmentMutation,
   useGradeSubmissionMutation,
-  useGetAssignmentSubmissionsQuery,
   useGetAssignmentReportQuery,
 } = assignmentApi;

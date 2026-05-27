@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetTeacherByIdQuery, useUpdateTeacherMutation } from '../../store/api/teacherApi.js';
-import { TeacherForm } from '../../components/teachers/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetTeacherByIdQuery, useUpdateTeacherMutation } from '@/store/api/teacherApi.js';
+import { TeacherForm } from '@/components/teachers/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditTeacherPage() {

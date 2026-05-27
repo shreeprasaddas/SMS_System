@@ -260,8 +260,8 @@ analyticsReportSchema.pre('save', async function (next) {
 });
 
 // Indexes
-analyticsReportSchema.index({ schoolId, reportType: 1 });
-analyticsReportSchema.index({ schoolId, 'reportPeriod.academicYear': 1 });
+analyticsReportSchema.index({ schoolId: 1, reportType: 1 });
+analyticsReportSchema.index({ schoolId: 1, 'reportPeriod.academicYear': 1 });
 analyticsReportSchema.index({ code: 1, schoolId: 1 });
 analyticsReportSchema.index({ createdAt: -1, schoolId: 1 });
 

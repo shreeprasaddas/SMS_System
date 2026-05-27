@@ -184,9 +184,9 @@ studentProgressReportSchema.pre('save', async function (next) {
 });
 
 // Indexes
-studentProgressReportSchema.index({ schoolId, studentId: 1 });
-studentProgressReportSchema.index({ schoolId, parentId: 1 });
-studentProgressReportSchema.index({ schoolId, 'reportingPeriod.academicYear': 1 });
+studentProgressReportSchema.index({ schoolId: 1, studentId: 1 });
+studentProgressReportSchema.index({ schoolId: 1, parentId: 1 });
+studentProgressReportSchema.index({ schoolId: 1, 'reportingPeriod.academicYear': 1 });
 studentProgressReportSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Academic performance status

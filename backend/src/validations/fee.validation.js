@@ -132,4 +132,9 @@ module.exports = {
   exemptFromFeesSchema,
   getStudentFeesSchema,
   createConcessionSchema,
+  // Aliases used by fee.routes.js
+  allocateStudentFeesSchema: allocateFeesSchema,
+  getFeesSchema: getStudentFeesSchema,
+  feeAnalyticsSchema: getStudentFeesSchema,
 };
+

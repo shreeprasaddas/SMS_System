@@ -201,7 +201,7 @@ reportDashboardSchema.pre('save', async function (next) {
 });
 
 // Indexes
-reportDashboardSchema.index({ schoolId, status: 1 });
+reportDashboardSchema.index({ schoolId: 1, status: 1 });
 reportDashboardSchema.index({ dashboardType: 1, schoolId: 1 });
 reportDashboardSchema.index({ code: 1, schoolId: 1 });
 

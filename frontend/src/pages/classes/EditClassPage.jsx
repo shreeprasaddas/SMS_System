@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetClassByIdQuery, useUpdateClassMutation } from '../../store/api/classApi.js';
-import { ClassForm } from '../../components/classes/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetClassByIdQuery, useUpdateClassMutation } from '@/store/api/classApi.js';
+import { ClassForm } from '@/components/classes/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditClassPage() {

@@ -1,7 +1,9 @@
 import React from 'react';
-import { Input } from '../common/index.js';
+import { useGetClassesQuery } from '@/store/api/classApi.js';
 
 function StudentFilters({ onFiltersChange, filters = {} }) {
+  const { data: classesResponse, isLoading: classesLoading } = useGetClassesQuery({ limit: 100 });
+  const classes = classesResponse?.data || [];
   const handleSearchChange = (e) => {
     onFiltersChange({ ...filters, search: e.target.value, page: 1 });
   };
@@ -40,18 +42,12 @@ function StudentFilters({ onFiltersChange, filters = {} }) {
             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="">All Classes</option>
-            <option value="class_001">Class 1</option>
-            <option value="class_002">Class 2</option>
-            <option value="class_003">Class 3</option>
-            <option value="class_004">Class 4</option>
-            <option value="class_005">Class 5</option>
-            <option value="class_006">Class 6</option>
-            <option value="class_007">Class 7</option>
-            <option value="class_008">Class 8</option>
-            <option value="class_009">Class 9</option>
-            <option value="class_010">Class 10</option>
-            <option value="class_011">Class 11</option>
-            <option value="class_012">Class 12</option>
+            {classesLoading && <option disabled>Loading classes...</option>}
+            {classes.map((cls) => (
+              <option key={cls._id} value={cls._id}>
+                {cls.name}
+              </option>
+            ))}
           </select>
         </div>
 

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetAssignmentByIdQuery, useUpdateAssignmentMutation } from '../../store/api/assignmentApi.js';
-import { AssignmentForm } from '../../components/assignments/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetAssignmentByIdQuery, useUpdateAssignmentMutation } from '@/store/api/assignmentApi.js';
+import { AssignmentForm } from '@/components/assignments/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditAssignmentPage() {

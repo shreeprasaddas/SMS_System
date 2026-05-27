@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetAssignmentsQuery, useDeleteAssignmentMutation } from '../../store/api/assignmentApi.js';
-import { AssignmentCard, AssignmentFilters } from '../../components/assignments/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetAssignmentsQuery, useDeleteAssignmentMutation } from '@/store/api/assignmentApi.js';
+import { AssignmentCard, AssignmentFilters } from '@/components/assignments/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function AssignmentsPage() {

@@ -195,8 +195,8 @@ mobileAttendanceLogSchema.pre('save', async function (next) {
 });
 
 // Indexes
-mobileAttendanceLogSchema.index({ schoolId, logType: 1 });
-mobileAttendanceLogSchema.index({ schoolId, performedByUserId: 1 });
+mobileAttendanceLogSchema.index({ schoolId: 1, logType: 1 });
+mobileAttendanceLogSchema.index({ schoolId: 1, performedByUserId: 1 });
 mobileAttendanceLogSchema.index({ resourceType: 1, schoolId: 1 });
 mobileAttendanceLogSchema.index({ code: 1, schoolId: 1 });
 mobileAttendanceLogSchema.index({ createdAt: -1, schoolId: 1 });

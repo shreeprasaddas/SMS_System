@@ -21,6 +21,13 @@ exports.authenticate = (req, res, next) => {
     // Verify token
     const decoded = jwt.verify(token, env.JWT_SECRET);
 
+    // Validate schoolId is a valid ObjectId (prevents CastError in downstream queries)
+    const mongoose = require('mongoose');
+    if (decoded.schoolId && !mongoose.Types.ObjectId.isValid(decoded.schoolId)) {
+      logger.warn('Invalid schoolId in token, user must re-login', { userId: decoded.userId, schoolId: decoded.schoolId });
+      throw new AuthenticationError('Session contains invalid school reference. Please logout and login again.');
+    }
+
     // Attach user to request
     req.user = decoded; // { userId, role, schoolId, email, iat, exp }
     logger.debug('User authenticated', { userId: decoded.userId, role: decoded.role });

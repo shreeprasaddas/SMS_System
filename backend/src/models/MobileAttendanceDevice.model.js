@@ -167,7 +167,7 @@ mobileAttendanceDeviceSchema.pre('save', async function (next) {
 });
 
 // Indexes
-mobileAttendanceDeviceSchema.index({ schoolId, status: 1 });
+mobileAttendanceDeviceSchema.index({ schoolId: 1, status: 1 });
 mobileAttendanceDeviceSchema.index({ deviceIdentifier: 1, schoolId: 1 });
 mobileAttendanceDeviceSchema.index({ code: 1, schoolId: 1 });
 mobileAttendanceDeviceSchema.index({ 'assignedTo.userId': 1, schoolId: 1 });

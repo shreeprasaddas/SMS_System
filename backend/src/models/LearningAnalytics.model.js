@@ -247,8 +247,8 @@ learningAnalyticsSchema.pre('save', async function (next) {
 });
 
 // Indexes
-learningAnalyticsSchema.index({ schoolId, studentId: 1 });
-learningAnalyticsSchema.index({ schoolId, academicYear: 1 });
+learningAnalyticsSchema.index({ schoolId: 1, studentId: 1 });
+learningAnalyticsSchema.index({ schoolId: 1, academicYear: 1 });
 learningAnalyticsSchema.index({ code: 1, schoolId: 1 });
 learningAnalyticsSchema.index({ 'risksAndChallenges.dropoutRisk.isAtRisk': 1, schoolId: 1 });
 

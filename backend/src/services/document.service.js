@@ -8,7 +8,7 @@ const DocumentIssued = require('../models/documents/DocumentIssued.model');
 const DocumentRequest = require('../models/documents/DocumentRequest.model');
 const DocumentVerification = require('../models/documents/DocumentVerification.model');
 const DocumentArchive = require('../models/documents/DocumentArchive.model');
-const AppError = require('../utils/AppError');
+const { AppError } = require('../utils/errorHelper');
 
 class DocumentService {
   /**

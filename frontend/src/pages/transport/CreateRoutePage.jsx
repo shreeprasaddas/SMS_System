@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateRouteMutation } from '../../store/api/transportApi.js';
-import { RouteForm } from '../../components/transport/index.js';
+import { useCreateRouteMutation } from '@/store/api/transportApi.js';
+import { RouteForm } from '@/components/transport/index.js';
 import toast from 'react-hot-toast';
 
 function CreateRoutePage() {

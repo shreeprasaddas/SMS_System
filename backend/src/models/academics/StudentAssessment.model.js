@@ -97,7 +97,7 @@ studentAssessmentSchema.index({ schoolId: 1, status: 1 });
 studentAssessmentSchema.index({ student: 1, assessment: 1, unique: true });
 
 // Virtual for grade calculation
-studentAssessmentSchema.virtual('grade').get(function () {
+studentAssessmentSchema.virtual('calculatedGrade').get(function () {
   if (!this.marksObtained || !this.totalMarks) return null;
   const percentage = (this.marksObtained / this.totalMarks) * 100;
   return percentage >= 80 ? 'A' : percentage >= 60 ? 'B' : percentage >= 40 ? 'C' : 'F';

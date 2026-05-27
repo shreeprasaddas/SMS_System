@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const ReportCardController = require('../controllers/reportcard.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const reportCardValidation = require('../validations/reportcard.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Report Card Generation Routes
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/generate',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(reportCardValidation.generateReportCardSchema, 'body'),
+  validate(reportCardValidation.generateReportCardSchema, 'body'),
   ReportCardController.generateReportCard
 );
 
@@ -40,7 +37,7 @@ router.get(
 router.get(
   '/student/:studentId',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'PARENT']),
-  validateRequest(reportCardValidation.getReportCardsSchema, 'query'),
+  validate(reportCardValidation.getReportCardsSchema, 'query'),
   ReportCardController.getStudentReportCards
 );
 
@@ -48,7 +45,7 @@ router.get(
 router.get(
   '/class/:classId',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(reportCardValidation.getClassReportCardsSchema, 'query'),
+  validate(reportCardValidation.getClassReportCardsSchema, 'query'),
   ReportCardController.getClassReportCards
 );
 
@@ -74,7 +71,7 @@ router.patch(
 router.patch(
   '/class/publish',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(reportCardValidation.publishReportCardsSchema, 'body'),
+  validate(reportCardValidation.publishReportCardsSchema, 'body'),
   ReportCardController.publishClassReportCards
 );
 
@@ -86,7 +83,7 @@ router.patch(
 router.patch(
   '/:reportCardId/principal-remarks',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(reportCardValidation.remarksSchema, 'body'),
+  validate(reportCardValidation.remarksSchema, 'body'),
   ReportCardController.addPrincipalRemarks
 );
 
@@ -94,7 +91,7 @@ router.patch(
 router.patch(
   '/:reportCardId/teacher-remarks',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(reportCardValidation.remarksSchema, 'body'),
+  validate(reportCardValidation.remarksSchema, 'body'),
   ReportCardController.addClassTeacherRemarks
 );
 
@@ -106,7 +103,7 @@ router.patch(
 router.get(
   '/class-stats',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(reportCardValidation.classStatsSchema, 'query'),
+  validate(reportCardValidation.classStatsSchema, 'query'),
   ReportCardController.getClassReportCardStats
 );
 

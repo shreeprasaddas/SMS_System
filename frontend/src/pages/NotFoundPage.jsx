@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Card from '../components/common/Card.jsx';
-import Button from '../components/common/Button.jsx';
+import Card from '@/components/common/Card.jsx';
+import Button from '@/components/common/Button.jsx';
 
 function NotFoundPage() {
   return (

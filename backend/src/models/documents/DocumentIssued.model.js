@@ -58,7 +58,7 @@ const documentIssuedSchema = new mongoose.Schema({
   documentData: {
     // Dynamic object with template placeholders filled
     // e.g., { studentName: "John Doe", grade: "A+", date: "2026-05-04" }
-    type: mongoose.Schema.Schema.Types.Mixed,
+    type: mongoose.Schema.Types.Mixed,
   },
   serialNumber: {
     type: String,

@@ -145,10 +145,10 @@ const alumniJobPostingSchema = new mongoose.Schema(
 );
 
 // Indexes for multi-tenancy and filtering
-alumniJobPostingSchema.index({ schoolId, status: 1 });
-alumniJobPostingSchema.index({ schoolId, postedByAlumniId: 1 });
-alumniJobPostingSchema.index({ schoolId, jobCategory: 1 });
-alumniJobPostingSchema.index({ schoolId, applicationDeadline: 1 });
+alumniJobPostingSchema.index({ schoolId: 1, status: 1 });
+alumniJobPostingSchema.index({ schoolId: 1, postedByAlumniId: 1 });
+alumniJobPostingSchema.index({ schoolId: 1, jobCategory: 1 });
+alumniJobPostingSchema.index({ schoolId: 1, applicationDeadline: 1 });
 
 // Virtual for salary display
 alumniJobPostingSchema.virtual('salaryDisplay').get(function () {

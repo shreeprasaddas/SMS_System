@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetRouteByIdQuery, useUpdateRouteMutation } from '../../store/api/transportApi.js';
-import { RouteForm } from '../../components/transport/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetRouteByIdQuery, useUpdateRouteMutation } from '@/store/api/transportApi.js';
+import { RouteForm } from '@/components/transport/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditRoutePage() {

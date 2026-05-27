@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const PaymentController = require('../controllers/payment.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const paymentValidation = require('../validations/payment.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Payment Recording Routes
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'STUDENT']),
-  validateRequest(paymentValidation.recordPaymentSchema, 'body'),
+  validate(paymentValidation.recordPaymentSchema, 'body'),
   PaymentController.recordPayment
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'TEACHER', 'STUDENT', 'PARENT']),
-  validateRequest(paymentValidation.paymentFilterSchema, 'query'),
+  validate(paymentValidation.paymentFilterSchema, 'query'),
   PaymentController.getPayments
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.patch(
   '/:paymentId/status',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(paymentValidation.approvePaymentSchema, 'body'),
+  validate(paymentValidation.approvePaymentSchema, 'body'),
   PaymentController.updatePaymentStatus
 );
 
@@ -56,7 +53,7 @@ router.patch(
 router.post(
   '/razorpay/order',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'STUDENT']),
-  validateRequest(paymentValidation.createRazorpayOrderSchema, 'body'),
+  validate(paymentValidation.createRazorpayOrderSchema, 'body'),
   PaymentController.createRazorpayOrder
 );
 
@@ -85,7 +82,7 @@ router.patch(
 router.patch(
   '/:paymentId/reject',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(paymentValidation.approvePaymentSchema, 'body'),
+  validate(paymentValidation.approvePaymentSchema, 'body'),
   PaymentController.rejectPayment
 );
 

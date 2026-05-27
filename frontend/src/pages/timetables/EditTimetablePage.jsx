@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetTimetableByIdQuery, useUpdateTimetableMutation } from '../../store/api/timetableApi.js';
-import { TimetableForm } from '../../components/timetables/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetTimetableByIdQuery, useUpdateTimetableMutation } from '@/store/api/timetableApi.js';
+import { TimetableForm } from '@/components/timetables/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditTimetablePage() {

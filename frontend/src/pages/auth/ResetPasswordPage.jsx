@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useResetPasswordMutation } from '../../store/api/authApi.js';
-import { Button, Input, Card } from '../../components/common/index.js';
+import { useResetPasswordMutation } from '@/store/api/authApi.js';
+import { Button, Input, Card } from '@/components/common/index.js';
 
 function ResetPasswordPage() {
   const { token } = useParams();

@@ -3,9 +3,9 @@ import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
-import { useLoginMutation } from '../../store/api/authApi.js';
-import { loginSuccess } from '../../store/slices/authSlice.js';
-import { Button, Input, Card } from '../../components/common/index.js';
+import { useLoginMutation } from '@/store/api/authApi.js';
+import { loginSuccess } from '@/store/slices/authSlice.js';
+import { Button, Input, Card } from '@/components/common/index.js';
 
 function LoginPage() {
   const navigate = useNavigate();

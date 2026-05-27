@@ -5,12 +5,10 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
 const performanceAnalyticsController = require('../controllers/performanceAnalytics.controller');
 
 // Middleware to attach schoolId from auth
-router.use(authenticate);
-
 /**
  * Performance Metrics Routes
  */

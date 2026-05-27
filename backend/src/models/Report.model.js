@@ -165,9 +165,9 @@ reportSchema.pre('save', async function (next) {
 });
 
 // Indexes
-reportSchema.index({ schoolId, status: 1 });
-reportSchema.index({ schoolId, reportType: 1 });
-reportSchema.index({ schoolId, reportCategory: 1 });
+reportSchema.index({ schoolId: 1, status: 1 });
+reportSchema.index({ schoolId: 1, reportType: 1 });
+reportSchema.index({ schoolId: 1, reportCategory: 1 });
 reportSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Days since last run

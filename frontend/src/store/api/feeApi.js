@@ -43,74 +43,102 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const feeApi = createApi({
   reducerPath: 'feeApi',
   baseQuery: baseQueryWithReauth,
-  tagTypes: ['Fees', 'Fee', 'Payments'],
+  tagTypes: ['Fees', 'Fee', 'FeeStructure', 'Payments'],
   endpoints: (builder) => ({
-    getFees: builder.query({
-      query: ({ page = 1, limit = 10, search = '', status = '', classId = '' } = {}) => {
-        let url = `/fees?page=${page}&limit=${limit}`;
+    // ========== Fee Structures ==========
+
+    // GET /fees/structures
+    getFeeStructures: builder.query({
+      query: ({ page = 1, limit = 10, status = '' } = {}) => {
+        let url = `/fees/structures?page=${page}&limit=${limit}`;
+        if (status) url += `&status=${status}`;
+        return url;
+      },
+      providesTags: ['FeeStructure'],
+    }),
+
+    // POST /fees/structures
+    createFeeStructure: builder.mutation({
+      query: (data) => ({
+        url: '/fees/structures',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['FeeStructure'],
+    }),
+
+    // PATCH /fees/structures/:id/approve
+    approveFeeStructure: builder.mutation({
+      query: (feeStructureId) => ({
+        url: `/fees/structures/${feeStructureId}/approve`,
+        method: 'PATCH',
+      }),
+      invalidatesTags: ['FeeStructure'],
+    }),
+
+    // ========== Student Fees ==========
+
+    // GET /fees/students
+    getStudentFees: builder.query({
+      query: ({ page = 1, limit = 10, search = '', status = '', classId = '', studentId = '' } = {}) => {
+        let url = `/fees/students?page=${page}&limit=${limit}`;
         if (search) url += `&search=${search}`;
         if (status) url += `&status=${status}`;
         if (classId) url += `&classId=${classId}`;
+        if (studentId) url += `&studentId=${studentId}`;
         return url;
       },
       providesTags: ['Fees'],
     }),
 
-    getFeeById: builder.query({
-      query: (feeId) => `/fees/${feeId}`,
-      providesTags: (result, error, feeId) => [{ type: 'Fee', id: feeId }],
+    // GET /fees/students/:studentFeeId
+    getStudentFeeById: builder.query({
+      query: (studentFeeId) => `/fees/students/${studentFeeId}`,
+      providesTags: (result, error, id) => [{ type: 'Fee', id }],
     }),
 
-    createFee: builder.mutation({
-      query: (feeData) => ({
-        url: '/fees',
+    // POST /fees/allocate
+    allocateFeesToStudents: builder.mutation({
+      query: (data) => ({
+        url: '/fees/allocate',
         method: 'POST',
-        body: feeData,
+        body: data,
       }),
       invalidatesTags: ['Fees'],
     }),
 
-    updateFee: builder.mutation({
-      query: ({ feeId, ...updates }) => ({
-        url: `/fees/${feeId}`,
-        method: 'PUT',
-        body: updates,
-      }),
-      invalidatesTags: (result, error, { feeId }) => [
-        { type: 'Fee', id: feeId },
-        'Fees',
-      ],
-    }),
-
-    patchFee: builder.mutation({
-      query: ({ feeId, ...updates }) => ({
-        url: `/fees/${feeId}`,
-        method: 'PATCH',
-        body: updates,
-      }),
-      invalidatesTags: (result, error, { feeId }) => [
-        { type: 'Fee', id: feeId },
-        'Fees',
-      ],
-    }),
-
-    deleteFee: builder.mutation({
-      query: (feeId) => ({
-        url: `/fees/${feeId}`,
-        method: 'DELETE',
+    // POST /fees/students/:id/concession
+    applyConcession: builder.mutation({
+      query: ({ studentFeeId, ...data }) => ({
+        url: `/fees/students/${studentFeeId}/concession`,
+        method: 'POST',
+        body: data,
       }),
       invalidatesTags: ['Fees'],
     }),
 
-    recordPayment: builder.mutation({
-      query: (paymentData) => ({
-        url: '/fees/payment/record',
+    // POST /fees/students/:id/exempt
+    exemptFromFees: builder.mutation({
+      query: ({ studentFeeId, ...data }) => ({
+        url: `/fees/students/${studentFeeId}/exempt`,
         method: 'POST',
-        body: paymentData,
+        body: data,
       }),
-      invalidatesTags: ['Fees', 'Payments'],
+      invalidatesTags: ['Fees'],
     }),
 
+    // POST /fees/students/:id/reminder
+    sendFeeReminder: builder.mutation({
+      query: (studentFeeId) => ({
+        url: `/fees/students/${studentFeeId}/reminder`,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Fees'],
+    }),
+
+    // ========== Fee Reports ==========
+
+    // GET /fees/report
     getFeeReport: builder.query({
       query: ({ startDate = '', endDate = '', classId = '', status = '' } = {}) => {
         let url = '/fees/report';
@@ -125,27 +153,39 @@ export const feeApi = createApi({
       providesTags: ['Fees'],
     }),
 
-    getStudentFees: builder.query({
-      query: (studentId) => `/fees/student/${studentId}`,
-      providesTags: (result, error, studentId) => [{ type: 'Fee', id: studentId }],
+    // ========== Legacy compat endpoints ==========
+    // These map old endpoint names to new ones for backward compat
+
+    getFees: builder.query({
+      query: (params = {}) => {
+        const { page = 1, limit = 10, search = '', status = '', classId = '' } = params;
+        let url = `/fees/students?page=${page}&limit=${limit}`;
+        if (search) url += `&search=${search}`;
+        if (status) url += `&status=${status}`;
+        if (classId) url += `&classId=${classId}`;
+        return url;
+      },
+      providesTags: ['Fees'],
     }),
 
-    getFeeStats: builder.query({
-      query: () => '/fees/stats',
-      providesTags: ['Fees'],
+    getFeeById: builder.query({
+      query: (feeId) => `/fees/students/${feeId}`,
+      providesTags: (result, error, feeId) => [{ type: 'Fee', id: feeId }],
     }),
   }),
 });
 
 export const {
+  useGetFeeStructuresQuery,
+  useCreateFeeStructureMutation,
+  useApproveFeeStructureMutation,
+  useGetStudentFeesQuery,
+  useGetStudentFeeByIdQuery,
+  useAllocateFeesToStudentsMutation,
+  useApplyConcessionMutation,
+  useExemptFromFeesMutation,
+  useSendFeeReminderMutation,
+  useGetFeeReportQuery,
   useGetFeesQuery,
   useGetFeeByIdQuery,
-  useCreateFeeMutation,
-  useUpdateFeeMutation,
-  usePatchFeeMutation,
-  useDeleteFeeMutation,
-  useRecordPaymentMutation,
-  useGetFeeReportQuery,
-  useGetStudentFeesQuery,
-  useGetFeeStatsQuery,
 } = feeApi;

@@ -1,9 +1,21 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card, Button } from '../../components/common/index.js';
+import { Card, Button, Spinner } from '@/components/common/index.js';
+import { useGetStudentsQuery } from '@/store/api/studentApi.js';
+import { useGetTeachersQuery } from '@/store/api/teacherApi.js';
+import { useGetClassesQuery } from '@/store/api/classApi.js';
 
 function ReportsPage() {
   const navigate = useNavigate();
+
+  // Fetch real stats
+  const { data: studentsData, isLoading: studentsLoading } = useGetStudentsQuery({ limit: 1 });
+  const { data: teachersData, isLoading: teachersLoading } = useGetTeachersQuery({ limit: 1 });
+  const { data: classesData, isLoading: classesLoading } = useGetClassesQuery({ limit: 1 });
+
+  const totalStudents = studentsData?.data?.pagination?.total || 0;
+  const totalTeachers = teachersData?.data?.pagination?.total || 0;
+  const totalClasses = classesData?.data?.pagination?.total || 0;
 
   const reports = [
     {
@@ -11,7 +23,8 @@ function ReportsPage() {
       title: 'Attendance Report',
       description: 'Track student attendance patterns and trends',
       icon: '📋',
-      color: 'blue',
+      color: 'from-blue-500 to-blue-600',
+      bgLight: 'bg-blue-50',
       path: '/reports/attendance',
     },
     {
@@ -19,7 +32,8 @@ function ReportsPage() {
       title: 'Performance Report',
       description: 'Analyze student academic performance and grades',
       icon: '📊',
-      color: 'green',
+      color: 'from-green-500 to-green-600',
+      bgLight: 'bg-green-50',
       path: '/reports/performance',
     },
     {
@@ -27,7 +41,8 @@ function ReportsPage() {
       title: 'Finance Report',
       description: 'Monitor fee collection and financial transactions',
       icon: '💰',
-      color: 'purple',
+      color: 'from-purple-500 to-purple-600',
+      bgLight: 'bg-purple-50',
       path: '/reports/finance',
     },
     {
@@ -35,10 +50,13 @@ function ReportsPage() {
       title: 'School Report',
       description: 'Comprehensive overview of all school operations',
       icon: '🏫',
-      color: 'indigo',
+      color: 'from-indigo-500 to-indigo-600',
+      bgLight: 'bg-indigo-50',
       path: '/reports/school',
     },
   ];
+
+  const isLoading = studentsLoading || teachersLoading || classesLoading;
 
   return (
     <div className="space-y-6">
@@ -53,61 +71,83 @@ function ReportsPage() {
       {/* Report Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {reports.map((report) => (
-          <Card
+          <div
             key={report.id}
-            className="hover:shadow-lg transition-all cursor-pointer"
             onClick={() => navigate(report.path)}
+            className="bg-white rounded-xl border border-secondary-200 overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group"
           >
-            <div className="space-y-4">
-              <div className="text-5xl">{report.icon}</div>
-              <div>
-                <h3 className="text-lg font-semibold text-secondary-900">
-                  {report.title}
-                </h3>
-                <p className="text-sm text-secondary-600 mt-1">
-                  {report.description}
-                </p>
-              </div>
+            <div className={`bg-gradient-to-r ${report.color} p-4`}>
+              <span className="text-4xl">{report.icon}</span>
+            </div>
+            <div className="p-5">
+              <h3 className="text-lg font-semibold text-secondary-900 group-hover:text-primary-600 transition-colors">
+                {report.title}
+              </h3>
+              <p className="text-sm text-secondary-600 mt-1">
+                {report.description}
+              </p>
               <Button
                 variant="outline"
                 size="sm"
-                className="w-full"
+                className="w-full mt-4"
                 onClick={(e) => {
                   e.stopPropagation();
                   navigate(report.path);
                 }}
               >
-                View Report
+                View Report →
               </Button>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 
-      {/* Quick Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mt-8">
-        <Card>
-          <p className="text-sm text-secondary-600 font-medium">Total Students</p>
-          <p className="text-3xl font-bold text-primary-600 mt-2">0</p>
-          <p className="text-xs text-secondary-600 mt-2">As of today</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-secondary-600 font-medium">Avg Attendance</p>
-          <p className="text-3xl font-bold text-green-600 mt-2">0%</p>
-          <p className="text-xs text-secondary-600 mt-2">This month</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-secondary-600 font-medium">Fees Collected</p>
-          <p className="text-3xl font-bold text-blue-600 mt-2">$0</p>
-          <p className="text-xs text-secondary-600 mt-2">This term</p>
-        </Card>
-        <Card>
-          <p className="text-sm text-secondary-600 font-medium">Avg Performance</p>
-          <p className="text-3xl font-bold text-purple-600 mt-2">0%</p>
-          <p className="text-xs text-secondary-600 mt-2">Last exam</p>
-        </Card>
+      {/* Quick Stats - Real Data */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <QuickStat
+          label="Total Students"
+          value={totalStudents}
+          color="text-primary-600"
+          note="As of today"
+          loading={studentsLoading}
+        />
+        <QuickStat
+          label="Total Teachers"
+          value={totalTeachers}
+          color="text-green-600"
+          note="Active staff"
+          loading={teachersLoading}
+        />
+        <QuickStat
+          label="Total Classes"
+          value={totalClasses}
+          color="text-blue-600"
+          note="Current session"
+          loading={classesLoading}
+        />
+        <QuickStat
+          label="Avg Performance"
+          value="—"
+          color="text-purple-600"
+          note="Last exam"
+          loading={false}
+        />
       </div>
     </div>
+  );
+}
+
+function QuickStat({ label, value, color, note, loading }) {
+  return (
+    <Card>
+      <p className="text-sm text-secondary-600 font-medium">{label}</p>
+      {loading ? (
+        <div className="mt-2"><Spinner size="sm" /></div>
+      ) : (
+        <p className={`text-3xl font-bold ${color} mt-2`}>{value}</p>
+      )}
+      <p className="text-xs text-secondary-500 mt-2">{note}</p>
+    </Card>
   );
 }
 

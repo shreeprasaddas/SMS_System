@@ -1,65 +1,38 @@
 const express = require('express');
 const router = express.Router();
-const transportController = require('../controllers/transport.controller');
-const { authenticate } = require('../middleware/auth.middleware');
+const TransportController = require('../controllers/transport.controller');
 const { authorize } = require('../middleware/authorization.middleware');
-const { validate } = require('../middleware/validation.middleware');
-const {
-  createRouteSchema,
-  updateRouteSchema,
-  registerBusSchema,
-  updateBusSchema,
-  registerDriverSchema,
-  updateDriverSchema,
-  assignStudentSchema,
-  addAttendanceSchema,
-  listRoutesSchema,
-  listBusesSchema,
-  listDriversSchema
-} = require('../validations/transport.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 // ==================== ROUTES ====================
 
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(createRouteSchema),
-  transportController.createRoute
+  TransportController.createRoute
 );
 
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER', 'STUDENT', 'PARENT']),
-  validate(listRoutesSchema),
-  transportController.getAllRoutes
-);
-
-router.get(
-  '/:id',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER', 'STUDENT', 'PARENT']),
-  transportController.getRouteById
+  TransportController.getRoutes
 );
 
 router.put(
-  '/:id',
+  '/:routeId',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(updateRouteSchema),
-  transportController.updateRoute
+  TransportController.updateRoute
 );
 
-router.put(
-  '/:routeId/deactivate',
+router.delete(
+  '/:routeId',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  transportController.deactivateRoute
+  TransportController.deleteRoute
 );
 
 router.get(
-  '/:routeId/allocations',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER']),
-  transportController.getRouteAllocations
+  '/:routeId/statistics',
+  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
+  TransportController.getRouteStatistics
 );
 
 // ==================== BUSES ====================
@@ -67,56 +40,31 @@ router.get(
 router.post(
   '/buses',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(registerBusSchema),
-  transportController.registerBus
+  TransportController.createBus
 );
 
 router.get(
   '/buses',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER', 'STUDENT', 'PARENT']),
-  validate(listBusesSchema),
-  transportController.getAllBuses
-);
-
-router.get(
-  '/buses/:id',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER', 'STUDENT', 'PARENT']),
-  transportController.getBusById
+  TransportController.getBuses
 );
 
 router.put(
-  '/buses/:id',
+  '/buses/:busId/assign-driver',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(updateBusSchema),
-  transportController.updateBus
+  TransportController.assignDriver
 );
 
 router.get(
-  '/buses/:busId/logs',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER']),
-  transportController.getBusLogs
-);
-
-// ==================== DRIVERS ====================
-
-router.post(
-  '/drivers',
+  '/buses/:busId/maintenance',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(registerDriverSchema),
-  transportController.registerDriver
-);
-
-router.get(
-  '/drivers',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER']),
-  validate(listDriversSchema),
-  transportController.getAllDrivers
+  TransportController.getBusMaintenanceSchedule
 );
 
 router.put(
-  '/drivers/:driverId/deactivate',
+  '/buses/:busId/mileage',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  transportController.deactivateDriver
+  TransportController.updateBusMileage
 );
 
 // ==================== STUDENT ALLOCATIONS ====================
@@ -124,75 +72,13 @@ router.put(
 router.post(
   '/allocations',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validate(assignStudentSchema),
-  transportController.assignStudentToRoute
+  TransportController.assignStudentToRoute
 );
 
 router.get(
-  '/allocations/student/:studentId',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER', 'STUDENT', 'PARENT']),
-  transportController.getStudentAllocation
-);
-
-router.post(
-  '/allocations/:studentId/collect-fee',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  transportController.collectTransportFee
-);
-
-// ==================== ATTENDANCE ====================
-
-router.post(
-  '/attendance',
+  '/allocations',
   authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER', 'TEACHER']),
-  validate(addAttendanceSchema),
-  transportController.addTransportAttendance
-);
-
-// ==================== STATISTICS ====================
-
-router.get(
-  '/statistics',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  transportController.getTransportStatistics
-);
-
-module.exports = router;
-
-/**
- * Driver routes
- */
-router.post(
-  '/drivers',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validateRequest(transportValidation.addDriverSchema, 'body'),
-  TransportController.addDriver
-);
-
-router.get(
-  '/drivers',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validateRequest(transportValidation.getDriversSchema, 'query'),
-  TransportController.getDrivers
-);
-
-/**
- * Student transport assignment routes
- */
-router.post(
-  '/assignments',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  validateRequest(transportValidation.assignStudentTransportSchema, 'body'),
-  TransportController.assignStudentTransport
-);
-
-/**
- * Statistics
- */
-router.get(
-  '/stats',
-  authorize(['ADMIN', 'PRINCIPAL', 'TRANSPORT_MANAGER']),
-  TransportController.getTransportStats
+  TransportController.getStudentTransports
 );
 
 module.exports = router;

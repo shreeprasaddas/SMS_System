@@ -102,4 +102,4 @@ reportSchema.index({ schoolId: 1, generatedAt: -1 });
 reportSchema.index({ schoolId: 1, status: 1 });
 reportSchema.index({ schoolId: 1, generatedBy: 1 });
 
-module.exports = mongoose.model('Report', reportSchema);
+module.exports = mongoose.model('SystemReport', reportSchema);

@@ -188,7 +188,7 @@ generatedReportSchema.pre('save', async function (next) {
 });
 
 // Indexes
-generatedReportSchema.index({ schoolId, status: 1 });
+generatedReportSchema.index({ schoolId: 1, status: 1 });
 generatedReportSchema.index({ reportId: 1, schoolId: 1 });
 generatedReportSchema.index({ code: 1, schoolId: 1 });
 generatedReportSchema.index({ 'generationDetails.generatedDate': -1, schoolId: 1 });

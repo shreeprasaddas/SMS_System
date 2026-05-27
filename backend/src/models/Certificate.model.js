@@ -145,9 +145,9 @@ certificateSchema.pre('save', async function (next) {
 });
 
 // Indexes
-certificateSchema.index({ schoolId, status: 1 });
-certificateSchema.index({ schoolId, certificateType: 1 });
-certificateSchema.index({ schoolId, issuedFor: 1 });
+certificateSchema.index({ schoolId: 1, status: 1 });
+certificateSchema.index({ schoolId: 1, certificateType: 1 });
+certificateSchema.index({ schoolId: 1, issuedFor: 1 });
 certificateSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Days until expiry

@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const SystemController = require('../controllers/system.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const systemValidation = require('../validations/system.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Report routes
@@ -19,14 +16,14 @@ router.use(authenticate);
 router.post(
   '/reports',
   authorize(['ADMIN', 'PRINCIPAL', 'REPORT_MANAGER']),
-  validateRequest(systemValidation.generateReportSchema, 'body'),
+  validate(systemValidation.generateReportSchema, 'body'),
   SystemController.generateReport
 );
 
 router.get(
   '/reports',
   authorize(['ADMIN', 'PRINCIPAL', 'REPORT_MANAGER', 'TEACHER']),
-  validateRequest(systemValidation.getReportsSchema, 'query'),
+  validate(systemValidation.getReportsSchema, 'query'),
   SystemController.getReports
 );
 
@@ -36,14 +33,14 @@ router.get(
 router.post(
   '/backups',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.logBackupSchema, 'body'),
+  validate(systemValidation.logBackupSchema, 'body'),
   SystemController.logBackup
 );
 
 router.get(
   '/backups',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.getBackupLogsSchema, 'query'),
+  validate(systemValidation.getBackupLogsSchema, 'query'),
   SystemController.getBackupLogs
 );
 
@@ -53,7 +50,7 @@ router.get(
 router.get(
   '/logs',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.getSystemLogsSchema, 'query'),
+  validate(systemValidation.getSystemLogsSchema, 'query'),
   SystemController.getSystemLogs
 );
 
@@ -63,14 +60,14 @@ router.get(
 router.post(
   '/policies',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.createSecurityPolicySchema, 'body'),
+  validate(systemValidation.createSecurityPolicySchema, 'body'),
   SystemController.createSecurityPolicy
 );
 
 router.get(
   '/policies',
   authorize(['ADMIN', 'PRINCIPAL', 'SYSTEM', 'TEACHER']),
-  validateRequest(systemValidation.getSecurityPoliciesSchema, 'query'),
+  validate(systemValidation.getSecurityPoliciesSchema, 'query'),
   SystemController.getSecurityPolicies
 );
 
@@ -80,21 +77,21 @@ router.get(
 router.post(
   '/compliance',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.createComplianceSchema, 'body'),
+  validate(systemValidation.createComplianceSchema, 'body'),
   SystemController.createCompliance
 );
 
 router.get(
   '/compliance',
   authorize(['ADMIN', 'PRINCIPAL', 'SYSTEM']),
-  validateRequest(systemValidation.getComplianceRecordsSchema, 'query'),
+  validate(systemValidation.getComplianceRecordsSchema, 'query'),
   SystemController.getComplianceRecords
 );
 
 router.put(
   '/compliance/:complianceId',
   authorize(['ADMIN', 'SYSTEM']),
-  validateRequest(systemValidation.updateComplianceStatusSchema, 'body'),
+  validate(systemValidation.updateComplianceStatusSchema, 'body'),
   SystemController.updateComplianceStatus
 );
 

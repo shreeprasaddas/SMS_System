@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGetAttendanceReportQuery } from '../../store/api/attendanceApi.js';
-import { Spinner, Card } from '../../components/common/index.js';
+import { useGetAttendanceReportQuery } from '@/store/api/attendanceApi.js';
+import { Spinner, Card } from '@/components/common/index.js';
 
 function AttendanceReportPage() {
   const [filters, setFilters] = useState({ classId: '', startDate: '', endDate: '' });

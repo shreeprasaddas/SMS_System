@@ -13,7 +13,8 @@ const redisOptions = {
   port: process.env.REDIS_PORT || 6379,
   password: env.REDIS_PASSWORD || undefined,
   retryStrategy: (times) => {
-    const delay = Math.min(times * 50, 2000);
+    // exponential backoff starting at 1s, up to 15s
+    const delay = Math.min(times * 1000, 15000);
     return delay;
   },
   maxRetriesPerRequest: null,
@@ -27,11 +28,18 @@ redis.on('connect', () => {
 });
 
 redis.on('error', (err) => {
-  logger.error('Redis error:', err);
+  // Only log detailed errors if it's not a common ECONNREFUSED when offline
+  if (err.code === 'ECONNREFUSED') {
+    if (redis.silent_offline_warning_logged) return;
+    logger.warn('Redis is offline or not running locally. Cache features will be bypassed.');
+    redis.silent_offline_warning_logged = true;
+  } else {
+    logger.error('Redis error:', err);
+  }
 });
 
 redis.on('reconnecting', () => {
-  logger.warn('Redis reconnecting...');
+  // Silent reconnecting logs to avoid log flooding
 });
 
 redis.on('close', () => {

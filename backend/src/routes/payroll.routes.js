@@ -6,18 +6,15 @@
 const express = require('express');
 const router = express.Router();
 const PayrollController = require('../controllers/payroll.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const payrollValidation = require('../validations/payroll.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 // Create payroll
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(payrollValidation.createPayrollSchema, 'body'),
+  validate(payrollValidation.createPayrollSchema, 'body'),
   PayrollController.createPayroll
 );
 
@@ -25,7 +22,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(payrollValidation.getPayrollsSchema, 'query'),
+  validate(payrollValidation.getPayrollsSchema, 'query'),
   PayrollController.getPayrolls
 );
 
@@ -40,7 +37,7 @@ router.get(
 router.patch(
   '/:payrollId/process',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(payrollValidation.processPayrollSchema, 'body'),
+  validate(payrollValidation.processPayrollSchema, 'body'),
   PayrollController.processPayroll
 );
 
@@ -76,7 +73,7 @@ router.post(
 router.patch(
   '/:payrollId/mark-paid',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(payrollValidation.markPayrollAsPaidSchema, 'body'),
+  validate(payrollValidation.markPayrollAsPaidSchema, 'body'),
   PayrollController.markPayrollAsPaid
 );
 
@@ -84,7 +81,7 @@ router.patch(
 router.get(
   '/summary',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(payrollValidation.payrollSummarySchema, 'query'),
+  validate(payrollValidation.payrollSummarySchema, 'query'),
   PayrollController.getPayrollSummary
 );
 

@@ -178,9 +178,9 @@ performanceMetricSchema.pre('save', async function (next) {
 });
 
 // Indexes
-performanceMetricSchema.index({ schoolId, studentId: 1 });
-performanceMetricSchema.index({ schoolId, subjectId: 1 });
-performanceMetricSchema.index({ schoolId, assessmentType: 1 });
+performanceMetricSchema.index({ schoolId: 1, studentId: 1 });
+performanceMetricSchema.index({ schoolId: 1, subjectId: 1 });
+performanceMetricSchema.index({ schoolId: 1, assessmentType: 1 });
 performanceMetricSchema.index({ code: 1, schoolId: 1 });
 performanceMetricSchema.index({ assessmentDate: -1, schoolId: 1 });
 

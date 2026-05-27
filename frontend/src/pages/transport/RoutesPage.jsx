@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetRoutesQuery, useDeleteRouteMutation } from '../../store/api/transportApi.js';
-import { RouteCard, RouteFilters } from '../../components/transport/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetRoutesQuery, useDeleteRouteMutation } from '@/store/api/transportApi.js';
+import { RouteCard, RouteFilters } from '@/components/transport/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function RoutesPage() {

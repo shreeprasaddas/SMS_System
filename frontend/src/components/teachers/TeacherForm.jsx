@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Button, Card } from '../common/index.js';
+import { Button, Card } from '@/components/common';
 import toast from 'react-hot-toast';
 
 function TeacherForm({ initialData = null, onSubmit, isLoading = false }) {

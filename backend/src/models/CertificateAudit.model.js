@@ -147,9 +147,9 @@ certificateAuditSchema.pre('save', async function (next) {
 });
 
 // Indexes
-certificateAuditSchema.index({ schoolId, auditType: 1 });
-certificateAuditSchema.index({ schoolId, performedByUserId: 1 });
-certificateAuditSchema.index({ schoolId, resourceType: 1 });
+certificateAuditSchema.index({ schoolId: 1, auditType: 1 });
+certificateAuditSchema.index({ schoolId: 1, performedByUserId: 1 });
+certificateAuditSchema.index({ schoolId: 1, resourceType: 1 });
 certificateAuditSchema.index({ resourceId: 1, schoolId: 1 });
 certificateAuditSchema.index({ code: 1, schoolId: 1 });
 certificateAuditSchema.index({ createdAt: -1, schoolId: 1 });

@@ -267,159 +267,142 @@ exports.listDriversSchema = Joi.object({
 });
 
 module.exports = exports;
-      .optional(),
-    fuelType: Joi.string()
-      .valid('DIESEL', 'PETROL', 'CNG', 'ELECTRIC')
-      .optional(),
-    insuranceExpiry: Joi.date().optional(),
-    fitnessExpiry: Joi.date().optional(),
-    permitExpiry: Joi.date().optional(),
-    lastMaintenanceDate: Joi.date().optional(),
-    nextMaintenanceDate: Joi.date().optional(),
-    mileage: Joi.number().min(0).optional(),
-    features: Joi.array().items(
-      Joi.string().valid('AC', 'GPS', 'FIRST_AID_KIT', 'FIRE_EXTINGUISHER', 'SEAT_BELTS', 'EMERGENCY_BUTTONS')
-    ).optional(),
-    description: Joi.string().max(500).optional(),
-  }).unknown(false),
 
-  // Get buses (filters)
-  getBusesSchema: Joi.object({
-    page: Joi.number().default(1).min(1),
-    limit: Joi.number().default(10).min(1).max(100),
-    status: Joi.string()
-      .valid('ACTIVE', 'INACTIVE', 'MAINTENANCE', 'OUT_OF_SERVICE')
-      .optional(),
-    driver: Joi.string().optional(),
-    route: Joi.string().optional(),
-  }).unknown(true),
+// Get buses (filters)
+exports.getBusesSchema = Joi.object({
+  page: Joi.number().default(1).min(1),
+  limit: Joi.number().default(10).min(1).max(100),
+  status: Joi.string()
+    .valid('ACTIVE', 'INACTIVE', 'MAINTENANCE', 'OUT_OF_SERVICE')
+    .optional(),
+  driver: Joi.string().optional(),
+  route: Joi.string().optional(),
+}).unknown(true);
 
-  // Add driver
-  addDriverSchema: Joi.object({
-    user: Joi.string().required().messages({
-      'string.empty': 'User ID is required',
-    }),
-    licenseNumber: Joi.string().required().trim().messages({
-      'string.empty': 'License number is required',
-    }),
-    licenseType: Joi.string()
-      .valid('LMV', 'HMV', 'MCWG')
-      .required(),
-    licenseExpiry: Joi.date().required().messages({
-      'date.base': 'Valid license expiry date is required',
-    }),
-    experience: Joi.number().integer().min(0).max(50).required(),
-    emergencyContact: Joi.object({
-      name: Joi.string().required().trim(),
-      phone: Joi.string().required().trim(),
-      relationship: Joi.string().required().trim(),
-    }).required(),
-    medicalFitnessExpiry: Joi.date().required().messages({
-      'date.base': 'Valid medical fitness expiry date is required',
-    }),
-    trainingCompleted: Joi.array().items(
-      Joi.string().valid('DEFENSIVE_DRIVING', 'FIRST_AID', 'EMERGENCY_RESPONSE', 'CHILD_SAFETY')
-    ).optional(),
-    hireDate: Joi.date().required(),
-    remarks: Joi.string().optional().max(500),
-  }).unknown(false),
+// Add driver
+exports.addDriverSchema = Joi.object({
+  user: Joi.string().required().messages({
+    'string.empty': 'User ID is required',
+  }),
+  licenseNumber: Joi.string().required().trim().messages({
+    'string.empty': 'License number is required',
+  }),
+  licenseType: Joi.string()
+    .valid('LMV', 'HMV', 'MCWG')
+    .required(),
+  licenseExpiry: Joi.date().required().messages({
+    'date.base': 'Valid license expiry date is required',
+  }),
+  experience: Joi.number().integer().min(0).max(50).required(),
+  emergencyContact: Joi.object({
+    name: Joi.string().required().trim(),
+    phone: Joi.string().required().trim(),
+    relationship: Joi.string().required().trim(),
+  }).required(),
+  medicalFitnessExpiry: Joi.date().required().messages({
+    'date.base': 'Valid medical fitness expiry date is required',
+  }),
+  trainingCompleted: Joi.array().items(
+    Joi.string().valid('DEFENSIVE_DRIVING', 'FIRST_AID', 'EMERGENCY_RESPONSE', 'CHILD_SAFETY')
+  ).optional(),
+  hireDate: Joi.date().required(),
+  remarks: Joi.string().optional().max(500),
+}).unknown(false);
 
-  // Get drivers (filters)
-  getDriversSchema: Joi.object({
-    page: Joi.number().default(1).min(1),
-    limit: Joi.number().default(10).min(1).max(100),
-    status: Joi.string()
-      .valid('ACTIVE', 'INACTIVE', 'ON_LEAVE', 'TERMINATED')
-      .optional(),
-    assignedBus: Joi.string().optional(),
-  }).unknown(true),
+// Get drivers (filters)
+exports.getDriversSchema = Joi.object({
+  page: Joi.number().default(1).min(1),
+  limit: Joi.number().default(10).min(1).max(100),
+  status: Joi.string()
+    .valid('ACTIVE', 'INACTIVE', 'ON_LEAVE', 'TERMINATED')
+    .optional(),
+  assignedBus: Joi.string().optional(),
+}).unknown(true);
 
-  // Add route
-  addRouteSchema: Joi.object({
-    routeNumber: Joi.string().required().trim().messages({
-      'string.empty': 'Route number is required',
-    }),
-    routeName: Joi.string().required().trim(),
-    startPoint: Joi.string().required().trim(),
-    endPoint: Joi.string().required().trim(),
-    distance: Joi.number().min(0).required(),
-    estimatedDuration: Joi.number().min(0).required(),
-    stops: Joi.array().items(
-      Joi.object({
-        stopNumber: Joi.number().integer().min(1).required(),
-        stopName: Joi.string().required().trim(),
-        latitude: Joi.number().min(-90).max(90).optional(),
-        longitude: Joi.number().min(-180).max(180).optional(),
-        pickupTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-        dropTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-        fare: Joi.number().min(0).required(),
-      })
-    ).min(2).required(),
-    routeType: Joi.string()
-      .valid('MORNING_PICKUP', 'EVENING_DROPOFF', 'ROUND_TRIP')
-      .required(),
-    frequency: Joi.string()
-      .valid('DAILY', 'WEEKDAYS', 'WEEKENDS', 'CUSTOM')
-      .default('DAILY'),
-    customSchedule: Joi.array().items(
-      Joi.object({
-        dayOfWeek: Joi.string()
-          .valid('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')
-          .required(),
-        isActive: Joi.boolean().default(true),
-      })
-    ).optional(),
-    description: Joi.string().optional().max(500),
-  }).unknown(false),
-
-  // Assign student transport
-  assignStudentTransportSchema: Joi.object({
-    student: Joi.string().required().messages({
-      'string.empty': 'Student ID is required',
-    }),
-    route: Joi.string().required().messages({
-      'string.empty': 'Route ID is required',
-    }),
-    bus: Joi.string().required().messages({
-      'string.empty': 'Bus ID is required',
-    }),
-    pickupStop: Joi.object({
+// Add route
+exports.addRouteSchema = Joi.object({
+  routeNumber: Joi.string().required().trim().messages({
+    'string.empty': 'Route number is required',
+  }),
+  routeName: Joi.string().required().trim(),
+  startPoint: Joi.string().required().trim(),
+  endPoint: Joi.string().required().trim(),
+  distance: Joi.number().min(0).required(),
+  estimatedDuration: Joi.number().min(0).required(),
+  stops: Joi.array().items(
+    Joi.object({
       stopNumber: Joi.number().integer().min(1).required(),
       stopName: Joi.string().required().trim(),
+      latitude: Joi.number().min(-90).max(90).optional(),
+      longitude: Joi.number().min(-180).max(180).optional(),
       pickupTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-    }).required(),
-    dropStop: Joi.object({
-      stopNumber: Joi.number().integer().min(1).required(),
-      stopName: Joi.string().required().trim(),
       dropTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
-    }).required(),
-    transportFee: Joi.number().min(0).required(),
-    academicYear: Joi.string().required().trim(),
-    emergencyContact: Joi.object({
-      name: Joi.string().required().trim(),
-      phone: Joi.string().required().trim(),
-      relationship: Joi.string().required().trim(),
-    }).required(),
-    specialInstructions: Joi.string().optional().max(500),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().optional(),
-  }).unknown(false),
+      fare: Joi.number().min(0).required(),
+    })
+  ).min(2).required(),
+  routeType: Joi.string()
+    .valid('MORNING_PICKUP', 'EVENING_DROPOFF', 'ROUND_TRIP')
+    .required(),
+  frequency: Joi.string()
+    .valid('DAILY', 'WEEKDAYS', 'WEEKENDS', 'CUSTOM')
+    .default('DAILY'),
+  customSchedule: Joi.array().items(
+    Joi.object({
+      dayOfWeek: Joi.string()
+        .valid('MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY')
+        .required(),
+      isActive: Joi.boolean().default(true),
+    })
+  ).optional(),
+  description: Joi.string().optional().max(500),
+}).unknown(false);
 
-  // Get student transports (filters)
-  getStudentTransportsSchema: Joi.object({
-    page: Joi.number().default(1).min(1),
-    limit: Joi.number().default(10).min(1).max(100),
-    student: Joi.string().optional(),
-    route: Joi.string().optional(),
-    bus: Joi.string().optional(),
-    status: Joi.string()
-      .valid('ACTIVE', 'INACTIVE', 'SUSPENDED', 'GRADUATED')
-      .optional(),
-    paymentStatus: Joi.string()
-      .valid('PAID', 'PENDING', 'OVERDUE')
-      .optional(),
-    academicYear: Joi.string().optional(),
-  }).unknown(true),
-};
+// Assign student transport
+exports.assignStudentTransportSchema = Joi.object({
+  student: Joi.string().required().messages({
+    'string.empty': 'Student ID is required',
+  }),
+  route: Joi.string().required().messages({
+    'string.empty': 'Route ID is required',
+  }),
+  bus: Joi.string().required().messages({
+    'string.empty': 'Bus ID is required',
+  }),
+  pickupStop: Joi.object({
+    stopNumber: Joi.number().integer().min(1).required(),
+    stopName: Joi.string().required().trim(),
+    pickupTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
+  }).required(),
+  dropStop: Joi.object({
+    stopNumber: Joi.number().integer().min(1).required(),
+    stopName: Joi.string().required().trim(),
+    dropTime: Joi.string().pattern(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/).required(),
+  }).required(),
+  transportFee: Joi.number().min(0).required(),
+  academicYear: Joi.string().required().trim(),
+  emergencyContact: Joi.object({
+    name: Joi.string().required().trim(),
+    phone: Joi.string().required().trim(),
+    relationship: Joi.string().required().trim(),
+  }).required(),
+  specialInstructions: Joi.string().optional().max(500),
+  startDate: Joi.date().required(),
+  endDate: Joi.date().optional(),
+}).unknown(false);
 
-module.exports = transportValidation;
+// Get student transports (filters)
+exports.getStudentTransportsSchema = Joi.object({
+  page: Joi.number().default(1).min(1),
+  limit: Joi.number().default(10).min(1).max(100),
+  student: Joi.string().optional(),
+  route: Joi.string().optional(),
+  bus: Joi.string().optional(),
+  status: Joi.string()
+    .valid('ACTIVE', 'INACTIVE', 'SUSPENDED', 'GRADUATED')
+    .optional(),
+  paymentStatus: Joi.string()
+    .valid('PAID', 'PENDING', 'OVERDUE')
+    .optional(),
+  academicYear: Joi.string().optional(),
+}).unknown(true);
+

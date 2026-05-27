@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGetPerformanceReportQuery } from '../../store/api/reportApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetPerformanceReportQuery } from '@/store/api/reportApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function PerformanceReportPage() {
   const [filters, setFilters] = useState({

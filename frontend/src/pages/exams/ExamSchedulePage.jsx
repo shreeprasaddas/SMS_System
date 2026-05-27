@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGetExamScheduleQuery, usePublishExamResultsMutation } from '../../store/api/examApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetExamScheduleQuery, usePublishExamResultsMutation } from '@/store/api/examApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function ExamSchedulePage() {

@@ -197,8 +197,8 @@ parentProfileSchema.pre('save', async function (next) {
 });
 
 // Indexes
-parentProfileSchema.index({ schoolId, userId: 1 });
-parentProfileSchema.index({ schoolId, status: 1 });
+parentProfileSchema.index({ schoolId: 1, userId: 1 });
+parentProfileSchema.index({ schoolId: 1, status: 1 });
 parentProfileSchema.index({ code: 1, schoolId: 1 });
 parentProfileSchema.index({ 'children.studentId': 1, schoolId: 1 });
 

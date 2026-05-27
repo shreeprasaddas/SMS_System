@@ -167,7 +167,7 @@ reportScheduleSchema.pre('save', async function (next) {
 });
 
 // Indexes
-reportScheduleSchema.index({ schoolId, status: 1 });
+reportScheduleSchema.index({ schoolId: 1, status: 1 });
 reportScheduleSchema.index({ reportId: 1, schoolId: 1 });
 reportScheduleSchema.index({ code: 1, schoolId: 1 });
 reportScheduleSchema.index({ nextExecutionDate: 1, schoolId: 1 });

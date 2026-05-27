@@ -7,14 +7,17 @@ const Joi = require('joi');
 
 const createClassSchema = Joi.object({
   name: Joi.string().required().trim(),
-  code: Joi.string().required().trim().uppercase(),
-  classNumber: Joi.number().integer().required(),
-  academicYear: Joi.string().required(),
-  stream: Joi.string(),
+  code: Joi.string().trim().uppercase(),
+  classNumber: Joi.number().integer(),
+  academicYear: Joi.string().allow('', null),
+  section: Joi.string().allow('', null),
+  classTeacher: Joi.string().allow('', null),
+  teacherId: Joi.string().allow('', null),
+  stream: Joi.string().allow('', null),
   sections: Joi.array().items(Joi.string()),
   subjects: Joi.array().items(Joi.string()),
-  capacity: Joi.number().integer().min(1).default(50),
-  description: Joi.string(),
+  capacity: Joi.number().integer().min(1).allow('', null),
+  description: Joi.string().allow('', null),
 });
 
 const updateClassSchema = Joi.object({

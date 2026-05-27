@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const AssessmentController = require('../controllers/assessment.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const assessmentValidation = require('../validations/assessment.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Assessment CRUD Routes
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(assessmentValidation.createAssessmentSchema, 'body'),
+  validate(assessmentValidation.createAssessmentSchema, 'body'),
   AssessmentController.createAssessment
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'PARENT']),
-  validateRequest(assessmentValidation.getAssessmentsSchema, 'query'),
+  validate(assessmentValidation.getAssessmentsSchema, 'query'),
   AssessmentController.getAssessments
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.put(
   '/:assessmentId',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(assessmentValidation.updateAssessmentSchema, 'body'),
+  validate(assessmentValidation.updateAssessmentSchema, 'body'),
   AssessmentController.updateAssessment
 );
 
@@ -81,7 +78,7 @@ router.patch(
 router.post(
   '/:assessmentId/submit',
   authorize(['STUDENT']),
-  validateRequest(assessmentValidation.submitAssessmentSchema, 'body'),
+  validate(assessmentValidation.submitAssessmentSchema, 'body'),
   AssessmentController.submitAssessment
 );
 
@@ -89,7 +86,7 @@ router.post(
 router.patch(
   '/:assessmentId/mark/:studentAssessmentId',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(assessmentValidation.markAssessmentSchema, 'body'),
+  validate(assessmentValidation.markAssessmentSchema, 'body'),
   AssessmentController.markAssessment
 );
 
@@ -108,7 +105,7 @@ router.get(
 router.get(
   '/student/:studentId',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'PARENT']),
-  validateRequest(assessmentValidation.getStudentAssessmentsSchema, 'query'),
+  validate(assessmentValidation.getStudentAssessmentsSchema, 'query'),
   AssessmentController.getStudentAssessments
 );
 

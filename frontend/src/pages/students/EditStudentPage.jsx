@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useGetStudentByIdQuery, useUpdateStudentMutation } from '../../store/api/studentApi.js';
-import { StudentForm } from '../../components/students/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetStudentByIdQuery, useUpdateStudentMutation } from '@/store/api/studentApi.js';
+import { StudentForm } from '@/components/students/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditStudentPage() {

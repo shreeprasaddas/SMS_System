@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const financeController = require('../controllers/finance.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validate } = require('../middleware/validate.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const financeValidation = require('../validations/finance.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Budget Management Routes

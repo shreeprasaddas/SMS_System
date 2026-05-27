@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetExamByIdQuery } from '../../store/api/examApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetExamByIdQuery } from '@/store/api/examApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function ExamDetailPage() {
   const { examId } = useParams();

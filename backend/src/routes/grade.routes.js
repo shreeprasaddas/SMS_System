@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const GradeController = require('../controllers/grade.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const gradeValidation = require('../validations/grade.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Grade CRUD Routes
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(gradeValidation.createGradeSchema, 'body'),
+  validate(gradeValidation.createGradeSchema, 'body'),
   GradeController.createGrade
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT', 'PARENT']),
-  validateRequest(gradeValidation.getGradesSchema, 'query'),
+  validate(gradeValidation.getGradesSchema, 'query'),
   GradeController.getGrades
 );
 
@@ -48,7 +45,7 @@ router.get(
 router.patch(
   '/finalize',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(gradeValidation.finalizeGradesSchema, 'body'),
+  validate(gradeValidation.finalizeGradesSchema, 'body'),
   GradeController.finalizeGrades
 );
 
@@ -56,7 +53,7 @@ router.patch(
 router.patch(
   '/publish',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(gradeValidation.publishGradesSchema, 'body'),
+  validate(gradeValidation.publishGradesSchema, 'body'),
   GradeController.publishGrades
 );
 
@@ -64,7 +61,7 @@ router.patch(
 router.post(
   '/:gradeId/contest',
   authorize(['STUDENT', 'PARENT']),
-  validateRequest(gradeValidation.contestGradeSchema, 'body'),
+  validate(gradeValidation.contestGradeSchema, 'body'),
   GradeController.contestGrade
 );
 
@@ -72,7 +69,7 @@ router.post(
 router.patch(
   '/:gradeId/resolve',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(gradeValidation.resolveContestSchema, 'body'),
+  validate(gradeValidation.resolveContestSchema, 'body'),
   GradeController.resolveGradeContest
 );
 
@@ -84,7 +81,7 @@ router.patch(
 router.get(
   '/class-stats',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(gradeValidation.classStatsSchema, 'query'),
+  validate(gradeValidation.classStatsSchema, 'query'),
   GradeController.getClassGradeStats
 );
 
@@ -92,7 +89,7 @@ router.get(
 router.get(
   '/subject-performance',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(gradeValidation.classStatsSchema, 'query'),
+  validate(gradeValidation.classStatsSchema, 'query'),
   GradeController.getSubjectPerformance
 );
 

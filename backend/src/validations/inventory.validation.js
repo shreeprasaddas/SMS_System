@@ -214,6 +214,7 @@ exports.listOrdersSchema = Joi.object({
     .valid('DRAFT', 'SUBMITTED', 'CONFIRMED', 'IN_TRANSIT', 'RECEIVED', 'COMPLETED', 'CANCELLED', 'RETURNED'),
   approvalStatus: Joi.string().valid('PENDING', 'APPROVED', 'REJECTED')
 });
+exports.createAssetSchema = Joi.object({
     assetName: Joi.string().required().trim().messages({
       'string.empty': 'Asset name is required',
     }),
@@ -248,9 +249,9 @@ exports.listOrdersSchema = Joi.object({
       usefulLife: Joi.number().min(1),
     }).optional(),
     status: Joi.string().optional().valid('ACTIVE', 'INACTIVE', 'DAMAGED', 'LOST', 'DISCARDED'),
-  }),
+  });
 
-  updateAssetSchema: Joi.object({
+  exports.updateAssetSchema = Joi.object({
     assetName: Joi.string().optional().trim(),
     description: Joi.string().optional().trim(),
     quantity: Joi.number().optional().min(1),
@@ -259,19 +260,19 @@ exports.listOrdersSchema = Joi.object({
     condition: Joi.string().optional().valid('EXCELLENT', 'GOOD', 'FAIR', 'POOR'),
     warrantyExpiry: Joi.date().optional(),
     status: Joi.string().optional().valid('ACTIVE', 'INACTIVE', 'DAMAGED', 'LOST', 'DISCARDED'),
-  }),
+  });
 
-  getAssetsSchema: Joi.object({
+  exports.getAssetsSchema = Joi.object({
     category: Joi.string().optional(),
     location: Joi.string().optional(),
     status: Joi.string().optional(),
     condition: Joi.string().optional(),
     page: Joi.number().optional().default(1).min(1),
     limit: Joi.number().optional().default(10).min(1).max(100),
-  }),
+  });
 
   // Equipment Schemas
-  addEquipmentSchema: Joi.object({
+  exports.addEquipmentSchema = Joi.object({
     equipmentCode: Joi.string().required().trim().messages({
       'string.empty': 'Equipment code is required',
     }),
@@ -306,9 +307,9 @@ exports.listOrdersSchema = Joi.object({
     status: Joi.string()
       .optional()
       .valid('ACTIVE', 'INACTIVE', 'UNDER_REPAIR', 'DAMAGED', 'LOST', 'DISCARDED'),
-  }),
+  });
 
-  updateEquipmentSchema: Joi.object({
+  exports.updateEquipmentSchema = Joi.object({
     equipmentName: Joi.string().optional().trim(),
     department: Joi.string().optional().trim(),
     description: Joi.string().optional().trim(),
@@ -317,19 +318,19 @@ exports.listOrdersSchema = Joi.object({
     status: Joi.string().optional().valid('ACTIVE', 'INACTIVE', 'UNDER_REPAIR', 'DAMAGED', 'LOST', 'DISCARDED'),
     lastUsedDate: Joi.date().optional(),
     usageCount: Joi.number().optional().min(0),
-  }),
+  });
 
-  getEquipmentSchema: Joi.object({
+  exports.getEquipmentSchema = Joi.object({
     type: Joi.string().optional(),
     department: Joi.string().optional(),
     status: Joi.string().optional(),
     condition: Joi.string().optional(),
     page: Joi.number().optional().default(1).min(1),
     limit: Joi.number().optional().default(10).min(1).max(100),
-  }),
+  });
 
   // Stock Schemas
-  addStockSchema: Joi.object({
+  exports.addStockSchema = Joi.object({
     itemCode: Joi.string().required().trim().messages({
       'string.empty': 'Item code is required',
     }),
@@ -368,9 +369,9 @@ exports.listOrdersSchema = Joi.object({
     status: Joi.string()
       .optional()
       .valid('ACTIVE', 'INACTIVE', 'DISCONTINUED', 'OUT_OF_STOCK'),
-  }),
+  });
 
-  updateStockSchema: Joi.object({
+  exports.updateStockSchema = Joi.object({
     itemName: Joi.string().optional().trim(),
     description: Joi.string().optional().trim(),
     minimumStock: Joi.number().optional().min(1),
@@ -382,9 +383,9 @@ exports.listOrdersSchema = Joi.object({
     storageLocation: Joi.string().optional().trim(),
     expiryDate: Joi.date().optional(),
     status: Joi.string().optional().valid('ACTIVE', 'INACTIVE', 'DISCONTINUED', 'OUT_OF_STOCK'),
-  }),
+  });
 
-  adjustStockSchema: Joi.object({
+  exports.adjustStockSchema = Joi.object({
     type: Joi.string().required().valid('IN', 'OUT', 'ADJUSTMENT', 'DAMAGED', 'EXPIRED').messages({
       'any.only': 'Invalid adjustment type',
     }),
@@ -395,18 +396,18 @@ exports.listOrdersSchema = Joi.object({
       'string.empty': 'Reason is required',
     }),
     reference: Joi.string().optional().trim(),
-  }),
+  });
 
-  getStockSchema: Joi.object({
+  exports.getStockSchema = Joi.object({
     category: Joi.string().optional(),
     status: Joi.string().optional(),
     storageLocation: Joi.string().optional(),
     page: Joi.number().optional().default(1).min(1),
     limit: Joi.number().optional().default(10).min(1).max(100),
-  }),
+  });
 
   // Maintenance Schemas
-  createMaintenanceSchema: Joi.object({
+  exports.createMaintenanceSchema = Joi.object({
     assetType: Joi.string().required().valid('ASSET', 'EQUIPMENT').messages({
       'any.only': 'Invalid asset type',
     }),
@@ -443,9 +444,9 @@ exports.listOrdersSchema = Joi.object({
     nextMaintenanceType: Joi.string()
       .optional()
       .valid('PREVENTIVE', 'CORRECTIVE', 'EMERGENCY', 'CALIBRATION'),
-  }),
+  });
 
-  completeMaintenanceSchema: Joi.object({
+  exports.completeMaintenanceSchema = Joi.object({
     completionDate: Joi.date().optional(),
     condition: Joi.object({
       before: Joi.string().optional().valid('EXCELLENT', 'GOOD', 'FAIR', 'POOR', 'NON_FUNCTIONAL'),
@@ -460,13 +461,13 @@ exports.listOrdersSchema = Joi.object({
       partsReplaced: Joi.array().items(Joi.string().trim()).optional(),
     }).required(),
     remarks: Joi.string().optional().trim(),
-  }),
+  });
 
-  getMaintenanceSchema: Joi.object({
+  exports.getMaintenanceSchema = Joi.object({
     status: Joi.string().optional(),
     maintenanceType: Joi.string().optional(),
     priority: Joi.string().optional(),
     page: Joi.number().optional().default(1).min(1),
     limit: Joi.number().optional().default(10).min(1).max(100),
-  }),
-};
+  });
+

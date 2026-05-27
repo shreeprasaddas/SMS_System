@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card } from '../common/index.js';
+import { Card } from '@/components/common';
 
 function ExamCard({ examData, onEdit, onDelete }) {
   const getStatusColor = (status) => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateClassMutation } from '../../store/api/classApi.js';
-import { ClassForm } from '../../components/classes/index.js';
+import { useCreateClassMutation } from '@/store/api/classApi.js';
+import { ClassForm } from '@/components/classes/index.js';
 import toast from 'react-hot-toast';
 
 function CreateClassPage() {

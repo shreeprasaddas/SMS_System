@@ -2,8 +2,8 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useForgotPasswordMutation } from '../../store/api/authApi.js';
-import { Button, Input, Card } from '../../components/common/index.js';
+import { useForgotPasswordMutation } from '@/store/api/authApi.js';
+import { Button, Input, Card } from '@/components/common/index.js';
 
 function ForgotPasswordPage() {
   const [forgotPassword, { isLoading }] = useForgotPasswordMutation();

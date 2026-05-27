@@ -117,7 +117,7 @@ class AuthService {
    */
   async refreshToken(refreshToken) {
     try {
-      const decoded = jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET);
+      const decoded = jwt.verify(refreshToken, env.JWT_REFRESH_SECRET);
 
       const user = await User.findById(decoded.userId);
 

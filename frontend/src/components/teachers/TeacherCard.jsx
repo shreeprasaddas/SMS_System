@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from '../common/index.js';
+import { Button } from '@/components/common';
 
 function TeacherCard({ teacher, onEdit, onDelete, onView }) {
   const handleDelete = () => {

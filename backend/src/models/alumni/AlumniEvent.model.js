@@ -173,9 +173,9 @@ const alumniEventSchema = new mongoose.Schema(
 );
 
 // Indexes for multi-tenancy and filtering
-alumniEventSchema.index({ schoolId, status: 1 });
-alumniEventSchema.index({ schoolId, eventDate: 1 });
-alumniEventSchema.index({ schoolId, eventType: 1 });
+alumniEventSchema.index({ schoolId: 1, status: 1 });
+alumniEventSchema.index({ schoolId: 1, eventDate: 1 });
+alumniEventSchema.index({ schoolId: 1, eventType: 1 });
 
 // Virtual for registration open status
 alumniEventSchema.virtual('isRegistrationOpen').get(function () {

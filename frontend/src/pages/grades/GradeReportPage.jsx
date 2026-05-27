@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useGetGradeReportQuery } from '../../store/api/gradeApi.js';
-import { Card, Spinner } from '../../components/common/index.js';
+import { useGetGradeReportQuery } from '@/store/api/gradeApi.js';
+import { Card, Spinner } from '@/components/common/index.js';
 
 function GradeReportPage() {
   const [filters, setFilters] = useState({

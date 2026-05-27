@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateTeacherMutation } from '../../store/api/teacherApi.js';
-import { TeacherForm } from '../../components/teachers/index.js';
+import { useCreateTeacherMutation } from '@/store/api/teacherApi.js';
+import { TeacherForm } from '@/components/teachers/index.js';
 import toast from 'react-hot-toast';
 
 function CreateTeacherPage() {

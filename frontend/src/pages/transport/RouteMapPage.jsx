@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetRoutesQuery } from '../../store/api/transportApi.js';
-import { Card, Button, Spinner } from '../../components/common/index.js';
+import { useGetRoutesQuery } from '@/store/api/transportApi.js';
+import { Card, Button, Spinner } from '@/components/common/index.js';
 
 function RouteMapPage() {
   const navigate = useNavigate();

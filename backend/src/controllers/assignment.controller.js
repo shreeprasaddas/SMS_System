@@ -17,30 +17,120 @@ class AssignmentController {
   static async createAssignment(req, res, next) {
     try {
       const schoolId = req.user.schoolId;
-      const { title, description, subject, class: classId, teacher, dueDate, assignmentType, instructions } = req.body;
-
-      if (!title || !subject || !classId || !teacher) {
-        throw new ValidationError('Missing required fields');
-      }
-
-      const assignment = new Assignment({
-        schoolId,
+      const mongoose = require('mongoose');
+      const {
         title,
         description,
         subject,
-        class: classId,
+        subjectId: subjectIdFromBody,
+        class: classFromBody,
+        classId: classIdFromBody,
         teacher,
-        dueDate: new Date(dueDate),
-        assignmentType: assignmentType || 'HOMEWORK',
+        teacherId: teacherIdFromBody,
+        dueDate,
+        assignmentType,
         instructions,
+        totalMarks,
+        status,
+        topic,
+        learningObjectives,
+      } = req.body;
+
+      if (!title) {
+        throw new ValidationError('Assignment title is required');
+      }
+
+      // --- Resolve classId ---
+      const Class = require('../models/academic/Class.model');
+      let finalClassId = classFromBody || classIdFromBody;
+      if (!finalClassId || !mongoose.Types.ObjectId.isValid(finalClassId)) {
+        const defaultClass = await Class.findOne({ schoolId });
+        if (defaultClass) {
+          finalClassId = defaultClass._id;
+        } else {
+          throw new ValidationError('No class found. Please create a class first.');
+        }
+      }
+
+      // --- Resolve subjectId ---
+      let finalSubjectId = subject || subjectIdFromBody;
+      if (!finalSubjectId || !mongoose.Types.ObjectId.isValid(finalSubjectId)) {
+        const Subject = require('../models/academic/Subject.model');
+        const defaultSubject = await Subject.findOne({ schoolId });
+        if (defaultSubject) {
+          finalSubjectId = defaultSubject._id;
+        } else {
+          // Create a placeholder subject so the required field is satisfied
+          const Subject = require('../models/academic/Subject.model');
+          const newSubject = new Subject({
+            schoolId,
+            name: finalSubjectId || 'General',
+            code: 'SUB-' + Math.floor(1000 + Math.random() * 9000),
+            classId: finalClassId,
+          });
+          await newSubject.save();
+          finalSubjectId = newSubject._id;
+        }
+      }
+
+      // --- Resolve teacherId ---
+      const finalTeacherId = teacher || teacherIdFromBody || req.user.userId;
+
+      // --- Resolve academicYearId ---
+      const AcademicYear = require('../models/academic/AcademicYear.model');
+      let academicYear = await AcademicYear.findOne({ schoolId, isActive: true });
+      if (!academicYear) {
+        academicYear = await AcademicYear.findOne({ schoolId });
+      }
+      if (!academicYear) {
+        throw new ValidationError('No academic year found. Please create an academic year first.');
+      }
+
+      // --- Compute dates ---
+      const resolvedDueDate = dueDate ? new Date(dueDate) : new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+      const resolvedSubmissionDeadline = new Date(resolvedDueDate.getTime() + 24 * 60 * 60 * 1000); // 1 day after due
+
+      // --- Map status (frontend sends ACTIVE, model expects DRAFT/PUBLISHED/etc.) ---
+      const validStatuses = ['DRAFT', 'PUBLISHED', 'SUBMISSION_OPEN', 'CLOSED', 'GRADING_COMPLETED', 'ARCHIVED'];
+      let resolvedStatus = 'PUBLISHED';
+      if (status && validStatuses.includes(status)) {
+        resolvedStatus = status;
+      }
+
+      // --- Generate assignmentCode ---
+      const currentYear = new Date().getFullYear();
+      const count = await Assignment.countDocuments({ schoolId });
+      const assignmentCode = `ASN-${currentYear}-${String(count + 1).padStart(5, '0')}`;
+
+      const assignment = new Assignment({
+        schoolId,
+        assignmentCode,
+        title,
+        description,
+        instructions,
+        subjectId: finalSubjectId,
+        classId: finalClassId,
+        teacherId: finalTeacherId,
+        academicYearId: academicYear._id,
+        assignmentType: assignmentType || 'HOMEWORK',
+        topic,
+        learningObjectives,
+        publishedDate: new Date(),
+        dueDate: resolvedDueDate,
+        submissionDeadline: resolvedSubmissionDeadline,
+        totalMarks: parseInt(totalMarks) || 100,
         createdBy: req.user.userId,
-        status: 'ACTIVE'
+        status: resolvedStatus,
       });
 
       await assignment.save();
 
       return responseHelper.created(res, assignment, 'Assignment created successfully');
     } catch (error) {
+      // Handle duplicate assignmentCode
+      if (error.code === 11000) {
+        return responseHelper.error(res, 'Duplicate assignment code. Please try again.', 400);
+      }
       logger.error('Error creating assignment', error);
       next(error);
     }
@@ -328,318 +418,3 @@ class AssignmentController {
 }
 
 module.exports = AssignmentController;
-    const assignment = await assignmentService.createAssignment(
-      req.user.schoolId,
-      req.body,
-      req.user.userId
-    );
-
-    return responseHelper.created(res, assignment, 'Assignment created successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/assignments - Get all assignments
- */
-exports.getAllAssignments = async (req, res, next) => {
-  try {
-    const { status, subjectId, classId, page = 1, limit = 20 } = req.query;
-
-    const { assignments, total } = await assignmentService.getAllAssignments(
-      req.user.schoolId,
-      {
-        status,
-        subjectId,
-        classId,
-        page: Number(page),
-        limit: Number(limit)
-      }
-    );
-
-    return responseHelper.paginated(res, assignments, {
-      page: Number(page),
-      limit: Number(limit),
-      total
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/assignments/:id - Get assignment by ID
- */
-exports.getAssignmentById = async (req, res, next) => {
-  try {
-    const assignment = await assignmentService.getAssignmentById(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, assignment);
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * PUT /api/v1/assignments/:id - Update assignment
- */
-exports.updateAssignment = async (req, res, next) => {
-  try {
-    const assignment = await assignmentService.updateAssignment(
-      req.user.schoolId,
-      req.params.id,
-      req.body
-    );
-
-    return responseHelper.success(res, assignment, 'Assignment updated successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * PUT /api/v1/assignments/:id/publish - Publish assignment
- */
-exports.publishAssignment = async (req, res, next) => {
-  try {
-    const assignment = await assignmentService.publishAssignment(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, assignment, 'Assignment published successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * PUT /api/v1/assignments/:id/close - Close assignment
- */
-exports.closeAssignment = async (req, res, next) => {
-  try {
-    const assignment = await assignmentService.closeAssignment(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, assignment, 'Assignment closed successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/assignments/:id/statistics - Get assignment statistics
- */
-exports.getAssignmentStatistics = async (req, res, next) => {
-  try {
-    const stats = await assignmentService.getAssignmentStatistics(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, stats);
-  } catch (err) {
-    next(err);
-  }
-};
-
-// ============== SUBMISSION MANAGEMENT ==============
-
-/**
- * POST /api/v1/assignments/:id/submit - Submit assignment
- */
-exports.submitAssignment = async (req, res, next) => {
-  try {
-    const submission = await assignmentService.submitAssignment(
-      req.user.schoolId,
-      req.params.id,
-      req.user.userId,
-      req.body
-    );
-
-    return responseHelper.created(res, submission, 'Assignment submitted successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/assignments/:id/submissions - Get all submissions (teacher)
- */
-exports.getAssignmentSubmissions = async (req, res, next) => {
-  try {
-    const { status, page = 1, limit = 20 } = req.query;
-
-    const { submissions, total } = await assignmentService.getAssignmentSubmissions(
-      req.user.schoolId,
-      req.params.id,
-      {
-        status,
-        page: Number(page),
-        limit: Number(limit)
-      }
-    );
-
-    return responseHelper.paginated(res, submissions, {
-      page: Number(page),
-      limit: Number(limit),
-      total
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/assignments/:assignmentId/students/:studentId/submissions - Get student's submissions
- */
-exports.getStudentSubmissions = async (req, res, next) => {
-  try {
-    const submissions = await assignmentService.getStudentSubmissions(
-      req.user.schoolId,
-      req.params.assignmentId,
-      req.params.studentId
-    );
-
-    return responseHelper.success(res, submissions);
-  } catch (err) {
-    next(err);
-  }
-};
-
-// ============== EVALUATION MANAGEMENT ==============
-
-/**
- * POST /api/v1/submissions/:submissionId/evaluate - Create evaluation
- */
-exports.createEvaluation = async (req, res, next) => {
-  try {
-    const evaluation = await assignmentService.createEvaluation(
-      req.user.schoolId,
-      req.params.submissionId,
-      req.body,
-      req.user.userId
-    );
-
-    return responseHelper.created(res, evaluation, 'Evaluation created successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/evaluations/:id - Get evaluation
- */
-exports.getEvaluation = async (req, res, next) => {
-  try {
-    const evaluation = await assignmentService.getEvaluation(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, evaluation);
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * PUT /api/v1/evaluations/:id - Update evaluation
- */
-exports.updateEvaluation = async (req, res, next) => {
-  try {
-    const evaluation = await assignmentService.updateEvaluation(
-      req.user.schoolId,
-      req.params.id,
-      req.body
-    );
-
-    return responseHelper.success(res, evaluation, 'Evaluation updated successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-// ============== RUBRIC MANAGEMENT ==============
-
-/**
- * POST /api/v1/rubrics - Create rubric
- */
-exports.createRubric = async (req, res, next) => {
-  try {
-    const rubric = await assignmentService.createRubric(
-      req.user.schoolId,
-      req.body,
-      req.user.userId
-    );
-
-    return responseHelper.created(res, rubric, 'Rubric created successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/rubrics - Get all rubrics
- */
-exports.getAllRubrics = async (req, res, next) => {
-  try {
-    const { isTemplate, status, page = 1, limit = 20 } = req.query;
-
-    const { rubrics, total } = await assignmentService.getAllRubrics(req.user.schoolId, {
-      isTemplate: isTemplate === 'true',
-      status,
-      page: Number(page),
-      limit: Number(limit)
-    });
-
-    return responseHelper.paginated(res, rubrics, {
-      page: Number(page),
-      limit: Number(limit),
-      total
-    });
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * GET /api/v1/rubrics/:id - Get rubric by ID
- */
-exports.getRubricById = async (req, res, next) => {
-  try {
-    const rubric = await assignmentService.getRubricById(
-      req.user.schoolId,
-      req.params.id
-    );
-
-    return responseHelper.success(res, rubric);
-  } catch (err) {
-    next(err);
-  }
-};
-
-/**
- * PUT /api/v1/rubrics/:id - Update rubric
- */
-exports.updateRubric = async (req, res, next) => {
-  try {
-    const rubric = await assignmentService.updateRubric(
-      req.user.schoolId,
-      req.params.id,
-      req.body
-    );
-
-    return responseHelper.success(res, rubric, 'Rubric updated successfully');
-  } catch (err) {
-    next(err);
-  }
-};
-
-module.exports = exports;

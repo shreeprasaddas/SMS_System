@@ -200,9 +200,9 @@ feeStatementSchema.pre('save', async function (next) {
 });
 
 // Indexes
-feeStatementSchema.index({ schoolId, studentId: 1 });
-feeStatementSchema.index({ schoolId, paymentStatus: 1 });
-feeStatementSchema.index({ schoolId, parentId: 1 });
+feeStatementSchema.index({ schoolId: 1, studentId: 1 });
+feeStatementSchema.index({ schoolId: 1, paymentStatus: 1 });
+feeStatementSchema.index({ schoolId: 1, parentId: 1 });
 feeStatementSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Is overdue

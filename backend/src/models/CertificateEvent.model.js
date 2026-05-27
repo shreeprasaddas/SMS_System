@@ -194,9 +194,9 @@ certificateEventSchema.pre('save', async function (next) {
 });
 
 // Indexes
-certificateEventSchema.index({ schoolId, status: 1 });
-certificateEventSchema.index({ schoolId, eventDate: 1 });
-certificateEventSchema.index({ schoolId, eventType: 1 });
+certificateEventSchema.index({ schoolId: 1, status: 1 });
+certificateEventSchema.index({ schoolId: 1, eventDate: 1 });
+certificateEventSchema.index({ schoolId: 1, eventType: 1 });
 certificateEventSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Days until event

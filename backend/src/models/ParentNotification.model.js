@@ -211,9 +211,9 @@ parentNotificationSchema.pre('save', async function (next) {
 });
 
 // Indexes
-parentNotificationSchema.index({ schoolId, parentId: 1 });
-parentNotificationSchema.index({ schoolId, notificationType: 1 });
-parentNotificationSchema.index({ schoolId, isRead: 1 });
+parentNotificationSchema.index({ schoolId: 1, parentId: 1 });
+parentNotificationSchema.index({ schoolId: 1, notificationType: 1 });
+parentNotificationSchema.index({ schoolId: 1, isRead: 1 });
 parentNotificationSchema.index({ code: 1, schoolId: 1 });
 parentNotificationSchema.index({ createdAt: -1, schoolId: 1 });
 

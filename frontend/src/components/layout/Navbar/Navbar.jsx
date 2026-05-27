@@ -1,8 +1,8 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { logout } from '../../../store/slices/authSlice.js';
-import { useLogoutMutation } from '../../../store/api/authApi.js';
+import { logout } from '@/store/slices/authSlice.js';
+import { useLogoutMutation } from '@/store/api/authApi.js';
 import { Bars3Icon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
 
 function Navbar({ onToggleSidebar, sidebarOpen }) {

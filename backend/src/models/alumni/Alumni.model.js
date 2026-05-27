@@ -144,10 +144,10 @@ const alumniSchema = new mongoose.Schema(
 );
 
 // Indexes for multi-tenancy and filtering
-alumniSchema.index({ schoolId, status: 1 });
-alumniSchema.index({ schoolId, classYear: 1 });
-alumniSchema.index({ schoolId, email: 1 });
-alumniSchema.index({ schoolId, currentCompany: 1 });
+alumniSchema.index({ schoolId: 1, status: 1 });
+alumniSchema.index({ schoolId: 1, classYear: 1 });
+alumniSchema.index({ schoolId: 1, email: 1 });
+alumniSchema.index({ schoolId: 1, currentCompany: 1 });
 
 // Virtual for full name
 alumniSchema.virtual('fullName').get(function () {

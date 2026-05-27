@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const ExpenseController = require('../controllers/expense.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const expenseValidation = require('../validations/expense.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Expense CRUD Routes
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'TRANSPORT_MANAGER', 'HOSTEL_MANAGER']),
-  validateRequest(expenseValidation.createExpenseSchema, 'body'),
+  validate(expenseValidation.createExpenseSchema, 'body'),
   ExpenseController.createExpense
 );
 
@@ -43,7 +40,7 @@ router.get(
 router.put(
   '/:expenseId',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(expenseValidation.updateExpenseSchema, 'body'),
+  validate(expenseValidation.updateExpenseSchema, 'body'),
   ExpenseController.updateExpense
 );
 
@@ -62,7 +59,7 @@ router.delete(
 router.patch(
   '/:expenseId/submit',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'TRANSPORT_MANAGER', 'HOSTEL_MANAGER']),
-  validateRequest(expenseValidation.submitExpenseSchema, 'body'),
+  validate(expenseValidation.submitExpenseSchema, 'body'),
   ExpenseController.submitExpense
 );
 
@@ -70,7 +67,7 @@ router.patch(
 router.patch(
   '/:expenseId/approve',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(expenseValidation.approveExpenseSchema, 'body'),
+  validate(expenseValidation.approveExpenseSchema, 'body'),
   ExpenseController.approveExpense
 );
 
@@ -85,7 +82,7 @@ router.patch(
 router.post(
   '/:expenseId/payment',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(expenseValidation.recordPaymentSchema, 'body'),
+  validate(expenseValidation.recordPaymentSchema, 'body'),
   ExpenseController.recordExpensePayment
 );
 

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetTimetableCalendarQuery } from '../../store/api/timetableApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetTimetableCalendarQuery } from '@/store/api/timetableApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function TimetableCalendarPage() {
   const navigate = useNavigate();

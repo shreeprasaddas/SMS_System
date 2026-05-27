@@ -112,7 +112,7 @@ exports.createLeaveTypeSchema = Joi.object({
 /**
  * Schema: Get leave policy (query validation)
  */
-exports.getLeavePolicy Schema = Joi.object({
+exports.getLeavePolicySchema = Joi.object({
   academicYear: Joi.string(),
   status: Joi.string().valid('DRAFT', 'ACTIVE', 'ARCHIVED', 'SUPERSEDED'),
   page: Joi.number().min(1).default(1),

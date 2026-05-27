@@ -163,8 +163,8 @@ certificateTemplateSchema.pre('save', async function (next) {
 });
 
 // Indexes
-certificateTemplateSchema.index({ schoolId, status: 1 });
-certificateTemplateSchema.index({ schoolId, templateCategory: 1 });
+certificateTemplateSchema.index({ schoolId: 1, status: 1 });
+certificateTemplateSchema.index({ schoolId: 1, templateCategory: 1 });
 certificateTemplateSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Total elements count

@@ -1,8 +1,8 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateStudentMutation } from '../../store/api/studentApi.js';
-import { StudentForm } from '../../components/students/index.js';
-import { Card } from '../../components/common/index.js';
+import { useCreateStudentMutation } from '@/store/api/studentApi.js';
+import { StudentForm } from '@/components/students/index.js';
+import { Card } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function CreateStudentPage() {

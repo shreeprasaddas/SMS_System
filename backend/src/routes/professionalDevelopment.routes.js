@@ -6,8 +6,6 @@ const authorize = require('../middleware/authorize');
 const router = express.Router();
 
 // Middleware
-router.use(authenticate);
-
 // ==================== PROFESSIONAL DEVELOPMENT PROGRAMS ====================
 // Create program
 router.post(

@@ -48,6 +48,10 @@ const userSchema = new mongoose.Schema(
       type: Date,
       required: false,
     },
+    bloodGroup: {
+      type: String,
+      required: false,
+    },
     address: {
       street: String,
       city: String,

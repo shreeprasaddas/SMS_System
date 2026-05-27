@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetSubjectByIdQuery } from '../../store/api/subjectApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetSubjectByIdQuery } from '@/store/api/subjectApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function SubjectDetailPage() {
   const { subjectId } = useParams();

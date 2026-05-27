@@ -4,6 +4,10 @@
  */
 
 const Class = require('../models/academic/Class.model');
+require('../models/academic/Section.model');
+require('../models/academic/Subject.model');
+require('../models/academic/AcademicYear.model');
+require('../models/user/User.model');
 const responseHelper = require('../utils/responseHelper');
 const { AppError, ValidationError } = require('../utils/errorHelper');
 const logger = require('../utils/logger');
@@ -31,13 +35,21 @@ class ClassController {
       const total = await Class.countDocuments(filter);
       const classes = await Class.find(filter)
         .populate('classTeacher', 'firstName lastName email')
-        .populate('academicYear', 'yearName')
+        .populate('academicYear', 'name')
         .lean()
         .skip(skip)
         .limit(parseInt(limit))
         .sort({ classNumber: 1 });
 
-      return responseHelper.paginated(res, classes, {
+      const mappedClasses = classes.map(c => ({
+        ...c,
+        section: c.section || (c.sections && c.sections[0] ? c.sections[0].name : 'A'),
+        academicYear: c.academicYear ? (c.academicYear.name || '2025-2026') : '2025-2026',
+        classTeacher: c.classTeacher ? `${c.classTeacher.firstName} ${c.classTeacher.lastName}`.trim() : 'Unassigned',
+        teacherId: c.classTeacher ? (c.classTeacher.email || 'N/A') : 'N/A',
+      }));
+
+      return responseHelper.paginated(res, mappedClasses, {
         page: parseInt(page),
         limit: parseInt(limit),
         total
@@ -58,14 +70,23 @@ class ClassController {
 
       const classData = await Class.findOne({ _id: classId, schoolId })
         .populate('classTeacher', 'firstName lastName email phone')
-        .populate('academicYear', 'yearName startDate endDate')
+        .populate('academicYear', 'name startDate endDate')
         .populate('subjects', 'name code')
         .populate('sections', 'name code')
         .lean();
 
       if (!classData) throw new AppError('Class not found', 404);
 
-      return responseHelper.success(res, classData, 'Class retrieved successfully');
+      // Map to frontend compatible fields
+      const mappedClassData = {
+        ...classData,
+        section: classData.section || (classData.sections && classData.sections[0] ? classData.sections[0].name : 'A'),
+        academicYear: classData.academicYear ? (classData.academicYear.name || '2025-2026') : '2025-2026',
+        classTeacher: classData.classTeacher ? `${classData.classTeacher.firstName} ${classData.classTeacher.lastName}`.trim() : 'Unassigned',
+        teacherId: classData.classTeacher ? (classData.classTeacher.email || 'N/A') : 'N/A',
+      };
+
+      return responseHelper.success(res, mappedClassData, 'Class retrieved successfully');
     } catch (error) {
       logger.error('Error fetching class', error);
       next(error);
@@ -78,33 +99,85 @@ class ClassController {
   static async createClass(req, res, next) {
     try {
       const schoolId = req.user.schoolId;
-      const { name, code, classNumber, academicYear, stream, capacity, classTeacher } = req.body;
+      const mongoose = require('mongoose');
+      const { name, code, classNumber, academicYear, stream, capacity, classTeacher, teacherId, description } = req.body;
 
-      if (!name || !code || !classNumber || !academicYear) {
-        throw new ValidationError('Missing required fields: name, code, classNumber, academicYear');
+      if (!name) {
+        throw new ValidationError('Class name is required');
       }
 
-      const existingClass = await Class.findOne({ schoolId, code });
-      if (existingClass) {
-        throw new ValidationError('Class with this code already exists');
+      // --- 1. Resolve / Auto-generate code ---
+      let resolvedCode = code || name.replace(/[^a-zA-Z0-9]/g, '-').toUpperCase();
+      if (!resolvedCode) {
+        resolvedCode = 'CLASS-' + Math.floor(1000 + Math.random() * 9000);
+      }
+
+      // Ensure unique code in the database
+      let codeExists = await Class.findOne({ schoolId, code: resolvedCode });
+      if (codeExists) {
+        resolvedCode = `${resolvedCode}-${Math.floor(1000 + Math.random() * 9000)}`;
+      }
+
+      // --- 2. Resolve / Auto-generate classNumber ---
+      let resolvedClassNumber = classNumber;
+      if (resolvedClassNumber === undefined || resolvedClassNumber === null || resolvedClassNumber === '') {
+        const match = name.match(/\d+/);
+        resolvedClassNumber = match ? parseInt(match[0], 10) : 10;
+      }
+
+      // --- 3. Resolve Academic Year to a valid ObjectId ---
+      const AcademicYear = require('../models/academic/AcademicYear.model');
+      let resolvedAcademicYearId;
+
+      if (academicYear && mongoose.Types.ObjectId.isValid(academicYear)) {
+        resolvedAcademicYearId = academicYear;
+      } else {
+        // Search by year name or code
+        let yearDoc = await AcademicYear.findOne({
+          schoolId,
+          $or: [
+            { name: academicYear },
+            { code: academicYear }
+          ]
+        });
+        if (!yearDoc) {
+          // Fallback to active year or first available year
+          yearDoc = await AcademicYear.findOne({ schoolId, isActive: true }) || await AcademicYear.findOne({ schoolId });
+        }
+        if (yearDoc) {
+          resolvedAcademicYearId = yearDoc._id;
+        } else {
+          throw new ValidationError('Academic year not found. Please create an Academic Year first.');
+        }
+      }
+
+      // --- 4. Resolve Class Teacher to a valid ObjectId ---
+      let resolvedTeacherId;
+      const teacherToResolve = classTeacher || teacherId;
+      if (teacherToResolve && mongoose.Types.ObjectId.isValid(teacherToResolve)) {
+        resolvedTeacherId = teacherToResolve;
+      } else {
+        // Fallback to the currently logged in admin user
+        resolvedTeacherId = req.user.userId;
       }
 
       const newClass = new Class({
         schoolId,
         name,
-        code,
-        classNumber,
-        academicYear,
-        stream,
-        capacity,
-        classTeacher,
+        code: resolvedCode,
+        classNumber: parseInt(resolvedClassNumber, 10),
+        academicYear: resolvedAcademicYearId,
+        stream: stream && mongoose.Types.ObjectId.isValid(stream) ? stream : undefined,
+        capacity: parseInt(capacity, 10) || 50,
+        classTeacher: resolvedTeacherId,
+        description,
         createdBy: req.user.userId,
         status: 'ACTIVE'
       });
 
       await newClass.save();
       await newClass.populate('classTeacher', 'firstName lastName email');
-      await newClass.populate('academicYear', 'yearName');
+      await newClass.populate('academicYear', 'name');
 
       return responseHelper.created(res, newClass, 'Class created successfully');
     } catch (error) {

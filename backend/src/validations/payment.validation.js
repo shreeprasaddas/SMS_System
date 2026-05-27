@@ -66,4 +66,8 @@ module.exports = {
   processRefundSchema,
   getPaymentsSchema,
   generateReceiptSchema,
+  // Aliases used by payment.routes.js
+  paymentFilterSchema: getPaymentsSchema,
+  approvePaymentSchema: verifyPaymentSchema,
+  createRazorpayOrderSchema: recordPaymentSchema,
 };

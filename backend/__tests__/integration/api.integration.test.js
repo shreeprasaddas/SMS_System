@@ -4,7 +4,7 @@
  */
 
 const request = require('supertest');
-const app = require('../../../src/app');
+const app = require('../../src/app');
 const { mockUsers, generateTestToken, clearDatabase, setupTestDB, teardownTestDB } = require('../../fixtures/testHelpers');
 
 describe('API Integration Tests', () => {

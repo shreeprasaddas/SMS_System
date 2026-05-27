@@ -5,13 +5,11 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../utils/validation.helper');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../utils/validation.helper');
 const mobileAttendanceController = require('../controllers/mobileAttendance.controller');
 
 // Middleware to attach schoolId from auth
-router.use(authenticate);
-
 /**
  * Device Management Routes
  */

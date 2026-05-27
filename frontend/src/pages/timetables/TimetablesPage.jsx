@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetTimetablesQuery, useDeleteTimetableMutation } from '../../store/api/timetableApi.js';
-import { TimetableCard, TimetableFilters } from '../../components/timetables/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetTimetablesQuery, useDeleteTimetableMutation } from '@/store/api/timetableApi.js';
+import { TimetableCard, TimetableFilters } from '@/components/timetables/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function TimetablesPage() {

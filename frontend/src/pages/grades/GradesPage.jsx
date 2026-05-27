@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetGradesQuery, useDeleteGradeMutation } from '../../store/api/gradeApi.js';
-import { GradeCard, GradeFilters } from '../../components/grades/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetGradesQuery, useDeleteGradeMutation } from '@/store/api/gradeApi.js';
+import { GradeCard, GradeFilters } from '@/components/grades/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function GradesPage() {

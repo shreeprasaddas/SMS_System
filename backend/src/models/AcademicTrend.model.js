@@ -237,8 +237,8 @@ academicTrendSchema.pre('save', async function (next) {
 });
 
 // Indexes
-academicTrendSchema.index({ schoolId, studentId: 1 });
-academicTrendSchema.index({ schoolId, 'trendMetrics.overallTrend': 1 });
+academicTrendSchema.index({ schoolId: 1, studentId: 1 });
+academicTrendSchema.index({ schoolId: 1, 'trendMetrics.overallTrend': 1 });
 academicTrendSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Trend health assessment

@@ -1,12 +1,9 @@
 const express = require('express');
 const router = express.Router();
 const hrController = require('../controllers/hr.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validate } = require('../middleware/validate.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const hrValidation = require('../validations/hr.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Staff Management Routes

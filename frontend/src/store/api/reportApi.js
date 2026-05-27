@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { loginSuccess, logout } from '../slices/authSlice.js';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: '/api/v1',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
   prepareHeaders: (headers, { getState }) => {
     const token = getState().auth.token;
     if (token) {
@@ -11,9 +12,37 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 401) {
+    const refreshResult = await baseQuery(
+      { url: '/auth/refresh-token', method: 'POST' },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult.data) {
+      const { token, refreshToken } = refreshResult.data.data;
+      api.dispatch(
+        loginSuccess({
+          user: api.getState().auth.user,
+          token,
+          refreshToken,
+        })
+      );
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+    }
+  }
+
+  return result;
+};
+
 export const reportApi = createApi({
   reducerPath: 'reportApi',
-  baseQuery,
+  baseQuery: baseQueryWithReauth,
   endpoints: (builder) => ({
     // Attendance Reports
     getAttendanceReport: builder.query({
@@ -23,7 +52,7 @@ export const reportApi = createApi({
         params: filters,
       }),
     }),
-    
+
     getAttendanceTrendReport: builder.query({
       query: (filters) => ({
         url: '/reports/attendance/trend',

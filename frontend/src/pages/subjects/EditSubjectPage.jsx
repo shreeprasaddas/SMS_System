@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetSubjectByIdQuery, useUpdateSubjectMutation } from '../../store/api/subjectApi.js';
-import { SubjectForm } from '../../components/subjects/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetSubjectByIdQuery, useUpdateSubjectMutation } from '@/store/api/subjectApi.js';
+import { SubjectForm } from '@/components/subjects/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditSubjectPage() {

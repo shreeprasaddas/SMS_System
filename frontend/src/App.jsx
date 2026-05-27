@@ -26,16 +26,17 @@ import EditClassPage from './pages/classes/EditClassPage.jsx';
 import AttendancePage from './pages/attendance/AttendancePage.jsx';
 import AttendanceReportPage from './pages/attendance/AttendanceReportPage.jsx';
 import StudentAttendancePage from './pages/attendance/StudentAttendancePage.jsx';
-import FeesPage from './pages/fees/FeesPage.jsx';
-import FeesReportPage from './pages/fees/FeesReportPage.jsx';
+import FeesPage from './pages/finance/FeesPage.jsx';
+import ExpensesPage from './pages/finance/ExpensesPage.jsx';
+import FinancialReportPage from './pages/finance/FinancialReportPage.jsx';
 import GradesPage from './pages/grades/GradesPage.jsx';
 import MarkGradesPage from './pages/grades/MarkGradesPage.jsx';
 import StudentGradesPage from './pages/grades/StudentGradesPage.jsx';
 import GradeReportPage from './pages/grades/GradeReportPage.jsx';
-import ReportsPage from './pages/reports/ReportsPage.jsx';
-import AttendanceReportPageReport from './pages/reports/AttendanceReportPage.jsx';
-import PerformanceReportPage from './pages/reports/PerformanceReportPage.jsx';
-import FinanceReportPage from './pages/reports/FinanceReportPage.jsx';
+import AnalyticsDashboard from './pages/analytics/AnalyticsDashboard.jsx';
+import AcademicReports from './pages/analytics/AcademicReports.jsx';
+import EngagementReports from './pages/analytics/EngagementReports.jsx';
+import BenchmarkingPage from './pages/analytics/BenchmarkingPage.jsx';
 import SubjectsPage from './pages/subjects/SubjectsPage.jsx';
 import CreateSubjectPage from './pages/subjects/CreateSubjectPage.jsx';
 import EditSubjectPage from './pages/subjects/EditSubjectPage.jsx';
@@ -58,6 +59,33 @@ import RoutesPage from './pages/transport/RoutesPage.jsx';
 import CreateRoutePage from './pages/transport/CreateRoutePage.jsx';
 import EditRoutePage from './pages/transport/EditRoutePage.jsx';
 import RouteMapPage from './pages/transport/RouteMapPage.jsx';
+import TransportPage from './pages/transport/TransportPage.jsx';
+import RouteDetailPage from './pages/transport/RouteDetailPage.jsx';
+
+import HostelPage from './pages/hostel/HostelPage.jsx';
+import RoomDetailPage from './pages/hostel/RoomDetailPage.jsx';
+
+import LibraryPage from './pages/library/LibraryPage.jsx';
+import BookDetailPage from './pages/library/BookDetailPage.jsx';
+
+import AdmissionPage from './pages/admission/AdmissionPage.jsx';
+import ApplicationDetailPage from './pages/admission/ApplicationDetailPage.jsx';
+
+import DisciplinePage from './pages/admin/DisciplinePage.jsx';
+import AlumniPage from './pages/admin/AlumniPage.jsx';
+import ParentPortalDashboard from './pages/portals/ParentPortalDashboard.jsx';
+
+import AnnouncementsPage from './pages/communication/AnnouncementsPage.jsx';
+import MessagesPage from './pages/communication/MessagesPage.jsx';
+import SchoolProfilePage from './pages/settings/SchoolProfilePage.jsx';
+import SystemSettingsPage from './pages/settings/SystemSettingsPage.jsx';
+import UserProfilePage from './pages/settings/UserProfilePage.jsx';
+
+import StaffPage from './pages/hr/StaffPage.jsx';
+import StaffDetailPage from './pages/hr/StaffDetailPage.jsx';
+import LeaveManagementPage from './pages/hr/LeaveManagementPage.jsx';
+import PayrollPage from './pages/hr/PayrollPage.jsx';
+
 import NotFoundPage from './pages/NotFoundPage.jsx';
 
 function App() {
@@ -114,9 +142,10 @@ function App() {
             <Route path="/attendance/report" element={<AttendanceReportPage />} />
             <Route path="/attendance/student/:studentId" element={<StudentAttendancePage />} />
 
-            {/* Fees - Phase 2 */}
-            <Route path="/fees" element={<FeesPage />} />
-            <Route path="/fees/report" element={<FeesReportPage />} />
+            {/* Finance - Phase 4 */}
+            <Route path="/finance/fees" element={<FeesPage />} />
+            <Route path="/finance/expenses" element={<ExpensesPage />} />
+            <Route path="/finance/reports" element={<FinancialReportPage />} />
 
             {/* Grades - Phase 3 */}
             <Route path="/grades" element={<GradesPage />} />
@@ -124,11 +153,11 @@ function App() {
             <Route path="/grades/student/:studentId" element={<StudentGradesPage />} />
             <Route path="/grades/report" element={<GradeReportPage />} />
 
-            {/* Reports - Phase 3 */}
-            <Route path="/reports" element={<ReportsPage />} />
-            <Route path="/reports/attendance" element={<AttendanceReportPageReport />} />
-            <Route path="/reports/performance" element={<PerformanceReportPage />} />
-            <Route path="/reports/finance" element={<FinanceReportPage />} />
+            {/* Analytics & Reporting - Phase 5 */}
+            <Route path="/analytics/dashboard" element={<AnalyticsDashboard />} />
+            <Route path="/analytics/academic" element={<AcademicReports />} />
+            <Route path="/analytics/engagement" element={<EngagementReports />} />
+            <Route path="/analytics/benchmarks" element={<BenchmarkingPage />} />
 
             {/* Subjects - Phase 4 */}
             <Route path="/subjects" element={<SubjectsPage />} />
@@ -156,11 +185,43 @@ function App() {
             <Route path="/timetables/:timetableId/edit" element={<EditTimetablePage />} />
             <Route path="/timetables/calendar" element={<TimetableCalendarPage />} />
 
-            {/* Transport Routes - Phase 4 Part 4 */}
+            {/* Transport Routes - Phase 4 & 8 */}
+            <Route path="/transport" element={<TransportPage />} />
             <Route path="/transport/routes" element={<RoutesPage />} />
             <Route path="/transport/routes/create" element={<CreateRoutePage />} />
+            <Route path="/transport/routes/:routeId" element={<RouteDetailPage />} />
             <Route path="/transport/routes/:routeId/edit" element={<EditRoutePage />} />
             <Route path="/transport/routes/map" element={<RouteMapPage />} />
+
+            {/* Hostel Routes - Phase 8 */}
+            <Route path="/hostels" element={<HostelPage />} />
+            <Route path="/hostels/rooms/:roomId" element={<RoomDetailPage />} />
+
+            {/* Library & Admissions - Phase 9 */}
+            <Route path="/library" element={<LibraryPage />} />
+            <Route path="/library/books/:bookId" element={<BookDetailPage />} />
+            <Route path="/admissions" element={<AdmissionPage />} />
+            <Route path="/admissions/:applicationId" element={<ApplicationDetailPage />} />
+
+            {/* Advanced Admin & Portals - Phase 10 */}
+            <Route path="/discipline" element={<DisciplinePage />} />
+            <Route path="/alumni" element={<AlumniPage />} />
+            <Route path="/parent-portal" element={<ParentPortalDashboard />} />
+
+            {/* Communication - Phase 3 & 6 */}
+            <Route path="/communication" element={<AnnouncementsPage />} />
+            <Route path="/communication/messages" element={<MessagesPage />} />
+
+            {/* Settings & Profile - Phase 6 */}
+            <Route path="/settings/school" element={<SchoolProfilePage />} />
+            <Route path="/settings/system" element={<SystemSettingsPage />} />
+            <Route path="/profile" element={<UserProfilePage />} />
+
+            {/* HR & Staff Management - Phase 7 */}
+            <Route path="/hr/staff" element={<StaffPage />} />
+            <Route path="/hr/staff/:staffId" element={<StaffDetailPage />} />
+            <Route path="/hr/leave" element={<LeaveManagementPage />} />
+            <Route path="/hr/payroll" element={<PayrollPage />} />
           </Route>
         </Route>
 

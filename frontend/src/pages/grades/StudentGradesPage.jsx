@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetStudentGradesQuery } from '../../store/api/gradeApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetStudentGradesQuery } from '@/store/api/gradeApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function StudentGradesPage() {
   const { studentId } = useParams();

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Button, Input, Card } from '../common/index.js';
+import { Button, Input, Card } from '@/components/common';
 
 function ClassForm({ initialData, onSubmit, isLoading }) {
   const { register, handleSubmit, control, formState: { errors } } = useForm({

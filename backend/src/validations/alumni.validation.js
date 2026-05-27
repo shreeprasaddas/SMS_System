@@ -175,6 +175,9 @@ exports.listMentorshipsSchema = Joi.object({
   menteeId: Joi.string().hex().length(24),
   status: Joi.string().valid('ACTIVE', 'ON_HOLD', 'COMPLETED', 'TERMINATED')
 });
+
+// Update Alumni Profile
+exports.updateAlumniSchema = Joi.object({
   careerField: Joi.string()
     .valid(
       'ENGINEERING',
@@ -233,7 +236,8 @@ exports.listMentorshipsSchema = Joi.object({
       'COMMUNITY_SERVICE'
     )
   )
-}).min(1).required();
+}).min(1);
+
 
 // Placement validation schemas
 exports.recordPlacementSchema = Joi.object({

@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const hostelController = require('../controllers/hostel.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const hostelValidation = require('../validations/hostel.validation');
-
-// Middleware: All routes require authentication
-router.use(authenticate);
 
 /**
  * HOSTELS - CRUD Operations
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(hostelValidation.createHostelSchema, 'body'),
+  validate(hostelValidation.createHostelSchema, 'body'),
   hostelController.createHostel
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN']),
-  validateRequest(hostelValidation.listHostelsSchema, 'query'),
+  validate(hostelValidation.listHostelsSchema, 'query'),
   hostelController.getAllHostels
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.put(
   '/:id',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(hostelValidation.createHostelSchema, 'body'),
+  validate(hostelValidation.createHostelSchema, 'body'),
   hostelController.updateHostel
 );
 
@@ -56,7 +53,7 @@ router.put(
 router.post(
   '/rooms/add',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER']),
-  validateRequest(hostelValidation.addRoomSchema, 'body'),
+  validate(hostelValidation.addRoomSchema, 'body'),
   hostelController.addRoom
 );
 
@@ -64,7 +61,7 @@ router.post(
 router.get(
   '/rooms/list',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN']),
-  validateRequest(hostelValidation.listRoomsSchema, 'query'),
+  validate(hostelValidation.listRoomsSchema, 'query'),
   hostelController.getRooms
 );
 
@@ -76,7 +73,7 @@ router.get(
 router.post(
   '/allocations/create',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER']),
-  validateRequest(hostelValidation.allocateStudentSchema, 'body'),
+  validate(hostelValidation.allocateStudentSchema, 'body'),
   hostelController.allocateStudent
 );
 
@@ -84,7 +81,7 @@ router.post(
 router.get(
   '/allocations/list',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN']),
-  validateRequest(hostelValidation.listAllocationsSchema, 'query'),
+  validate(hostelValidation.listAllocationsSchema, 'query'),
   hostelController.getAllocations
 );
 
@@ -96,7 +93,7 @@ router.get(
 router.post(
   '/fees/record',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'HOSTEL_MANAGER']),
-  validateRequest(hostelValidation.recordFeeSchema, 'body'),
+  validate(hostelValidation.recordFeeSchema, 'body'),
   hostelController.recordFee
 );
 
@@ -104,7 +101,7 @@ router.post(
 router.get(
   '/fees/list',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'HOSTEL_MANAGER']),
-  validateRequest(hostelValidation.listFeesSchema, 'query'),
+  validate(hostelValidation.listFeesSchema, 'query'),
   hostelController.getFees
 );
 
@@ -116,7 +113,7 @@ router.get(
 router.post(
   '/complaints/file',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN', 'STUDENT']),
-  validateRequest(hostelValidation.fileComplaintSchema, 'body'),
+  validate(hostelValidation.fileComplaintSchema, 'body'),
   hostelController.fileComplaint
 );
 
@@ -124,7 +121,7 @@ router.post(
 router.get(
   '/complaints/list',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN']),
-  validateRequest(hostelValidation.listComplaintsSchema, 'query'),
+  validate(hostelValidation.listComplaintsSchema, 'query'),
   hostelController.getComplaints
 );
 
@@ -132,7 +129,7 @@ router.get(
 router.patch(
   '/complaints/:id/status',
   authorize(['ADMIN', 'PRINCIPAL', 'HOSTEL_MANAGER', 'WARDEN']),
-  validateRequest(hostelValidation.updateComplaintStatusSchema, 'body'),
+  validate(hostelValidation.updateComplaintStatusSchema, 'body'),
   hostelController.updateComplaintStatus
 );
 

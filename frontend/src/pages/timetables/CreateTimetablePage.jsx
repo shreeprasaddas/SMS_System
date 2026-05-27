@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateTimetableMutation } from '../../store/api/timetableApi.js';
-import { TimetableForm } from '../../components/timetables/index.js';
+import { useCreateTimetableMutation } from '@/store/api/timetableApi.js';
+import { TimetableForm } from '@/components/timetables/index.js';
 import toast from 'react-hot-toast';
 
 function CreateTimetablePage() {

@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const analyticsController = require('../controllers/analytics.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const analyticsValidation = require('../validations/analytics.validation');
-
-// Middleware: All routes require authentication
-router.use(authenticate);
 
 /**
  * REPORTS - Report Management
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.createReportSchema, 'body'),
+  validate(analyticsValidation.createReportSchema, 'body'),
   analyticsController.createReport
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(analyticsValidation.listReportsSchema, 'query'),
+  validate(analyticsValidation.listReportsSchema, 'query'),
   analyticsController.getAllReports
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.put(
   '/:id',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.createReportSchema, 'body'),
+  validate(analyticsValidation.createReportSchema, 'body'),
   analyticsController.updateReport
 );
 
@@ -52,7 +49,7 @@ router.put(
 router.post(
   '/:id/generate',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(analyticsValidation.generateReportSchema, 'body'),
+  validate(analyticsValidation.generateReportSchema, 'body'),
   analyticsController.generateReport
 );
 
@@ -71,7 +68,7 @@ router.get(
 router.post(
   '/schedules/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.createScheduleSchema, 'body'),
+  validate(analyticsValidation.createScheduleSchema, 'body'),
   analyticsController.createSchedule
 );
 
@@ -79,7 +76,7 @@ router.post(
 router.get(
   '/schedules/list',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.listSchedulesSchema, 'query'),
+  validate(analyticsValidation.listSchedulesSchema, 'query'),
   analyticsController.getAllSchedules
 );
 
@@ -91,7 +88,7 @@ router.get(
 router.get(
   '/generated/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(analyticsValidation.listGeneratedSchema, 'query'),
+  validate(analyticsValidation.listGeneratedSchema, 'query'),
   analyticsController.getGeneratedReports
 );
 
@@ -103,7 +100,7 @@ router.get(
 router.post(
   '/dashboards/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.createDashboardSchema, 'body'),
+  validate(analyticsValidation.createDashboardSchema, 'body'),
   analyticsController.createDashboard
 );
 
@@ -111,7 +108,7 @@ router.post(
 router.get(
   '/dashboards/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(analyticsValidation.listDashboardsSchema, 'query'),
+  validate(analyticsValidation.listDashboardsSchema, 'query'),
   analyticsController.getAllDashboards
 );
 
@@ -137,7 +134,7 @@ router.post(
 router.post(
   '/metrics/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(analyticsValidation.createMetricSchema, 'body'),
+  validate(analyticsValidation.createMetricSchema, 'body'),
   analyticsController.createMetric
 );
 
@@ -145,7 +142,7 @@ router.post(
 router.get(
   '/metrics/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(analyticsValidation.listMetricsSchema, 'query'),
+  validate(analyticsValidation.listMetricsSchema, 'query'),
   analyticsController.getMetrics
 );
 

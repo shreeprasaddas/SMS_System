@@ -5,12 +5,10 @@
 
 const express = require('express');
 const router = express.Router();
-const { authenticate, authorize } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
 const noticeCircularController = require('../controllers/noticeCircular.controller');
 
 // Middleware
-router.use(authenticate);
-
 /**
  * Notice Management Routes
  */

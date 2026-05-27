@@ -53,6 +53,25 @@ export const classApi = createApi({
         if (status) url += `&status=${status}`;
         return url;
       },
+      transformResponse: (response) => {
+        const classes = Array.isArray(response?.data) ? response.data : (response?.data?.classes || []);
+        const total = response?.pagination?.total || response?.data?.total || classes.length;
+
+        // Define properties on the array itself so it acts both as a list and as a structured object
+        const dataArray = [...classes];
+        Object.defineProperties(dataArray, {
+          classes: { value: classes, enumerable: true },
+          total: { value: total, enumerable: true },
+          pagination: { value: response?.pagination, enumerable: true }
+        });
+
+        return {
+          success: true,
+          data: dataArray,
+          pagination: response?.pagination,
+          total: total
+        };
+      },
       providesTags: ['Classes'],
     }),
 

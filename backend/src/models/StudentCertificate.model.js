@@ -169,9 +169,9 @@ studentCertificateSchema.pre('save', async function (next) {
 });
 
 // Indexes
-studentCertificateSchema.index({ schoolId, status: 1 });
-studentCertificateSchema.index({ schoolId, studentId: 1 });
-studentCertificateSchema.index({ schoolId, certificateType: 1 });
+studentCertificateSchema.index({ schoolId: 1, status: 1 });
+studentCertificateSchema.index({ schoolId: 1, studentId: 1 });
+studentCertificateSchema.index({ schoolId: 1, certificateType: 1 });
 studentCertificateSchema.index({ certificateNumber: 1, schoolId: 1 });
 
 // Virtual: Days until expiry

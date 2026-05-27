@@ -1,7 +1,7 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetClassByIdQuery } from '../../store/api/classApi.js';
-import { Card, Spinner, Button } from '../../components/common/index.js';
+import { useGetClassByIdQuery } from '@/store/api/classApi.js';
+import { Card, Spinner, Button } from '@/components/common/index.js';
 
 function ClassDetailPage() {
   const { classId } = useParams();

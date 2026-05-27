@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateAssignmentMutation } from '../../store/api/assignmentApi.js';
-import { AssignmentForm } from '../../components/assignments/index.js';
+import { useCreateAssignmentMutation } from '@/store/api/assignmentApi.js';
+import { AssignmentForm } from '@/components/assignments/index.js';
 import toast from 'react-hot-toast';
 
 function CreateAssignmentPage() {

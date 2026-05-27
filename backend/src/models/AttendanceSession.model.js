@@ -159,9 +159,9 @@ attendanceSessionSchema.pre('save', async function (next) {
 });
 
 // Indexes
-attendanceSessionSchema.index({ schoolId, studentId: 1 });
-attendanceSessionSchema.index({ schoolId, sessionDate: 1 });
-attendanceSessionSchema.index({ schoolId, attendanceStatus: 1 });
+attendanceSessionSchema.index({ schoolId: 1, studentId: 1 });
+attendanceSessionSchema.index({ schoolId: 1, sessionDate: 1 });
+attendanceSessionSchema.index({ schoolId: 1, attendanceStatus: 1 });
 attendanceSessionSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Session duration in minutes

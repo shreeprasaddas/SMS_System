@@ -6,24 +6,21 @@
 const express = require('express');
 const router = express.Router();
 const AppraisalController = require('../controllers/appraisal.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const appraisalValidation = require('../validations/appraisal.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER']),
-  validateRequest(appraisalValidation.createAppraisalSchema, 'body'),
+  validate(appraisalValidation.createAppraisalSchema, 'body'),
   AppraisalController.createAppraisal
 );
 
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER']),
-  validateRequest(appraisalValidation.getAppraisalsSchema, 'query'),
+  validate(appraisalValidation.getAppraisalsSchema, 'query'),
   AppraisalController.getAppraisals
 );
 
@@ -36,7 +33,7 @@ router.get(
 router.put(
   '/:appraisalId',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER']),
-  validateRequest(appraisalValidation.updateAppraisalSchema, 'body'),
+  validate(appraisalValidation.updateAppraisalSchema, 'body'),
   AppraisalController.updateAppraisal
 );
 
@@ -49,14 +46,14 @@ router.patch(
 router.patch(
   '/:appraisalId/review',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER']),
-  validateRequest(appraisalValidation.reviewAppraisalSchema, 'body'),
+  validate(appraisalValidation.reviewAppraisalSchema, 'body'),
   AppraisalController.reviewAppraisal
 );
 
 router.patch(
   '/:appraisalId/finalize',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(appraisalValidation.finalizeAppraisalSchema, 'body'),
+  validate(appraisalValidation.finalizeAppraisalSchema, 'body'),
   AppraisalController.finalizeAppraisal
 );
 
@@ -69,14 +66,14 @@ router.patch(
 router.get(
   '/history',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER', 'EMPLOYEE']),
-  validateRequest(appraisalValidation.getAppraisalHistorySchema, 'query'),
+  validate(appraisalValidation.getAppraisalHistorySchema, 'query'),
   AppraisalController.getEmployeeAppraisalHistory
 );
 
 router.get(
   '/statistics',
   authorize(['ADMIN', 'PRINCIPAL', 'HR_MANAGER']),
-  validateRequest(appraisalValidation.getAppraisalStatisticsSchema, 'query'),
+  validate(appraisalValidation.getAppraisalStatisticsSchema, 'query'),
   AppraisalController.getAppraisalStatistics
 );
 

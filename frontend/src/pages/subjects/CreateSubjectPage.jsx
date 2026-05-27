@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateSubjectMutation } from '../../store/api/subjectApi.js';
-import { SubjectForm } from '../../components/subjects/index.js';
+import { useCreateSubjectMutation } from '@/store/api/subjectApi.js';
+import { SubjectForm } from '@/components/subjects/index.js';
 import toast from 'react-hot-toast';
 
 function CreateSubjectPage() {

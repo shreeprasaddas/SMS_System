@@ -1,8 +1,8 @@
 import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useGetExamByIdQuery, useUpdateExamMutation } from '../../store/api/examApi.js';
-import { ExamForm } from '../../components/exams/index.js';
-import { Spinner } from '../../components/common/index.js';
+import { useGetExamByIdQuery, useUpdateExamMutation } from '@/store/api/examApi.js';
+import { ExamForm } from '@/components/exams/index.js';
+import { Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function EditExamPage() {

@@ -200,7 +200,7 @@ reportMetricSchema.pre('save', async function (next) {
 });
 
 // Indexes
-reportMetricSchema.index({ schoolId, status: 1 });
+reportMetricSchema.index({ schoolId: 1, status: 1 });
 reportMetricSchema.index({ metricType: 1, schoolId: 1 });
 reportMetricSchema.index({ metricCategory: 1, schoolId: 1 });
 reportMetricSchema.index({ code: 1, schoolId: 1 });

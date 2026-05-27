@@ -1,13 +1,17 @@
 import React, { useState } from 'react';
-import { useGetAttendanceQuery, useMarkAttendanceMutation } from '../../store/api/attendanceApi.js';
-import { Button, Spinner, Card } from '../../components/common/index.js';
+import { useGetAttendanceQuery, useMarkAttendanceMutation } from '@/store/api/attendanceApi.js';
+import { useGetClassesQuery } from '@/store/api/classApi.js';
+import { Button, Spinner, Card } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function AttendancePage() {
   const [filters, setFilters] = useState({ classId: '', date: new Date().toISOString().split('T')[0] });
-  const { data, isLoading } = useGetAttendanceQuery(filters);
+  const { data: classesData, isLoading: classesLoading } = useGetClassesQuery({ limit: 100 });
+  const { data, isLoading } = useGetAttendanceQuery(filters, { skip: !filters.classId });
   const [markAttendance, { isLoading: isMarking }] = useMarkAttendanceMutation();
   const [selectedStudents, setSelectedStudents] = useState({});
+
+  const classes = classesData?.data?.classes || classesData?.data || [];
 
   const handleAttendanceToggle = (studentId) => {
     setSelectedStudents(prev => ({
@@ -44,13 +48,19 @@ function AttendancePage() {
             <label className="block text-sm font-medium mb-2">Class</label>
             <select
               value={filters.classId}
-              onChange={(e) => setFilters({ ...filters, classId: e.target.value })}
+              onChange={(e) => {
+                setFilters({ ...filters, classId: e.target.value });
+                setSelectedStudents({});
+              }}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             >
               <option value="">Select Class</option>
-              <option value="class_001">Class 1</option>
-              <option value="class_002">Class 2</option>
-              <option value="class_003">Class 3</option>
+              {classesLoading && <option disabled>Loading classes...</option>}
+              {classes.map((cls) => (
+                <option key={cls._id} value={cls._id}>
+                  {cls.name || cls.className} {cls.section ? `- ${cls.section}` : ''}
+                </option>
+              ))}
             </select>
           </div>
           <div>
@@ -64,8 +74,13 @@ function AttendancePage() {
           </div>
         </div>
 
-        {isLoading ? (
-          <Spinner size="lg" />
+        {!filters.classId ? (
+          <div className="text-center py-10 text-gray-400">
+            <p className="text-4xl mb-2">📋</p>
+            <p>Select a class to view and mark attendance</p>
+          </div>
+        ) : isLoading ? (
+          <div className="flex justify-center py-10"><Spinner size="lg" /></div>
         ) : (
           <>
             <div className="overflow-x-auto">
@@ -78,20 +93,28 @@ function AttendancePage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data?.data?.map((student, idx) => (
-                    <tr key={student._id} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3">{student.rollNumber}</td>
-                      <td className="px-4 py-3">{student.firstName} {student.lastName}</td>
-                      <td className="px-4 py-3">
-                        <input
-                          type="checkbox"
-                          checked={selectedStudents[student._id] || false}
-                          onChange={() => handleAttendanceToggle(student._id)}
-                          className="w-4 h-4"
-                        />
+                  {(data?.data || []).length === 0 ? (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-8 text-center text-gray-400">
+                        No students found for this class
                       </td>
                     </tr>
-                  ))}
+                  ) : (
+                    (data?.data || []).map((student) => (
+                      <tr key={student._id} className="border-t hover:bg-gray-50">
+                        <td className="px-4 py-3">{student.rollNumber}</td>
+                        <td className="px-4 py-3">{student.firstName} {student.lastName}</td>
+                        <td className="px-4 py-3">
+                          <input
+                            type="checkbox"
+                            checked={selectedStudents[student._id] || false}
+                            onChange={() => handleAttendanceToggle(student._id)}
+                            className="w-4 h-4"
+                          />
+                        </td>
+                      </tr>
+                    ))
+                  )}
                 </tbody>
               </table>
             </div>

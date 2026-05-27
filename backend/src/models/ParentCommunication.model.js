@@ -166,9 +166,9 @@ parentCommunicationSchema.pre('save', async function (next) {
 });
 
 // Indexes
-parentCommunicationSchema.index({ schoolId, parentId: 1 });
-parentCommunicationSchema.index({ schoolId, teacherId: 1 });
-parentCommunicationSchema.index({ schoolId, status: 1 });
+parentCommunicationSchema.index({ schoolId: 1, parentId: 1 });
+parentCommunicationSchema.index({ schoolId: 1, teacherId: 1 });
+parentCommunicationSchema.index({ schoolId: 1, status: 1 });
 parentCommunicationSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Is appointment scheduled

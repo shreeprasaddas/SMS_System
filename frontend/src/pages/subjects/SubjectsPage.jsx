@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetSubjectsQuery, useDeleteSubjectMutation } from '../../store/api/subjectApi.js';
-import { SubjectCard, SubjectFilters } from '../../components/subjects/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetSubjectsQuery, useDeleteSubjectMutation } from '@/store/api/subjectApi.js';
+import { SubjectCard, SubjectFilters } from '@/components/subjects/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function SubjectsPage() {

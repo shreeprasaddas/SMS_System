@@ -1,10 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const libraryController = require('../controllers/library.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-
-// All routes require authentication
-router.use(authenticate);
+const { authorize } = require('../middleware/authorization.middleware');
 
 /**
  * Book Management Routes

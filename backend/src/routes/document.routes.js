@@ -5,14 +5,10 @@
 
 const express = require('express');
 const router = express.Router();
-const authenticate = require('../middleware/authenticate.middleware');
-const authorize = require('../middleware/authorize.middleware');
-const validate = require('../middleware/validate.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const documentController = require('../controllers/document.controller');
 const validationSchemas = require('../validations/document.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 // =============== CERTIFICATE TEMPLATE ROUTES ===============
 

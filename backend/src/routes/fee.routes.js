@@ -6,13 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const FeeController = require('../controllers/fee.controller');
-const { authenticate } = require('../middleware/auth.middleware');
 const { authorize } = require('../middleware/authorization.middleware');
 const { validate } = require('../middleware/validation.middleware');
 const feeValidation = require('../validations/fee.validation');
-
-// All routes require authentication
-router.use(authenticate);
 
 /**
  * Fee Structure Routes
@@ -50,7 +46,7 @@ router.post(
   '/allocate',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
   validate(feeValidation.allocateStudentFeesSchema, 'body'),
-  FeeController.allocateFeesToStudents
+  FeeController.assignFeeStructure
 );
 
 // Get student fees
@@ -98,7 +94,7 @@ router.get(
   '/report',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
   validate(feeValidation.feeAnalyticsSchema, 'query'),
-  FeeController.getFeeReport
+  FeeController.getFeeSummary
 );
 
 module.exports = router;

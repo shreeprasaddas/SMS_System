@@ -319,281 +319,148 @@ class SubjectController {
       next(error);
     }
   }
-}
-
-module.exports = SubjectController;
-
-class SubjectController {
-  /**
-   * Create a new subject
-   * POST /api/v1/subjects
-   */
-  static async createSubject(req, res, next) {
-    try {
-      const subject = await subjectService.createSubject(
-        req.user.schoolId,
-        req.body,
-        req.user.userId
-      );
-
-      responseHelper.created(res, { subject }, 'Subject created successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
 
   /**
-   * Get all subjects
-   * GET /api/v1/subjects
-   */
-  static async getSubjects(req, res, next) {
-    try {
-      const { category } = req.query;
-
-      const subjects = await subjectService.getSubjects(req.user.schoolId, { category });
-
-      responseHelper.success(res, { subjects }, 'Subjects retrieved successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Get subject by ID
-   * GET /api/v1/subjects/:subjectId
-   */
-  static async getSubject(req, res, next) {
-    try {
-      const { subjectId } = req.params;
-
-      const subject = await subjectService.getSubjectById(req.user.schoolId, subjectId);
-
-      responseHelper.success(res, { subject }, 'Subject retrieved successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Update subject
-   * PUT /api/v1/subjects/:subjectId
-   */
-  static async updateSubject(req, res, next) {
-    try {
-      const { subjectId } = req.params;
-
-      const subject = await subjectService.updateSubject(
-        req.user.schoolId,
-        subjectId,
-        req.body,
-        req.user.userId
-      );
-
-      responseHelper.success(res, { subject }, 'Subject updated successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Delete subject
-   * DELETE /api/v1/subjects/:subjectId
-   */
-  static async deleteSubject(req, res, next) {
-    try {
-      const { subjectId } = req.params;
-
-      await subjectService.updateSubject(
-        req.user.schoolId,
-        subjectId,
-        { status: 'INACTIVE' },
-        req.user.userId
-      );
-
-      responseHelper.success(res, null, 'Subject deleted successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  // ============================================================
-  // CURRICULUM ENDPOINTS
-  // ============================================================
-
-  /**
-   * Create curriculum
-   * POST /api/v1/subjects/:subjectId/curriculum
-   */
-  static async createCurriculum(req, res, next) {
-    try {
-      const curriculum = await subjectService.createCurriculum(
-        req.user.schoolId,
-        req.body,
-        req.user.userId
-      );
-
-      responseHelper.created(res, { curriculum }, 'Curriculum created successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Get curriculums
-   * GET /api/v1/subjects/curriculum
-   */
-  static async getCurriculums(req, res, next) {
-    try {
-      const { subject, class: classId, academicYear, status } = req.query;
-
-      const curriculums = await subjectService.getCurriculums(req.user.schoolId, {
-        subject,
-        class: classId,
-        academicYear,
-        status,
-      });
-
-      responseHelper.success(res, { curriculums }, 'Curriculums retrieved successfully');
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Get curriculum by ID
-   * GET /api/v1/subjects/curriculum/:curriculumId
+   * Get single curriculum by ID
    */
   static async getCurriculum(req, res, next) {
     try {
       const { curriculumId } = req.params;
+      const schoolId = req.user.schoolId;
 
-      const curriculum = await subjectService.getCurriculumById(req.user.schoolId, curriculumId);
+      const curriculum = await Curriculum.findOne({ _id: curriculumId, schoolId })
+        .populate('subjects', 'name code')
+        .populate('class', 'name code')
+        .lean();
 
-      responseHelper.success(res, { curriculum }, 'Curriculum retrieved successfully');
+      if (!curriculum) throw new AppError('Curriculum not found', 404);
+
+      return responseHelper.success(res, curriculum, 'Curriculum retrieved successfully');
     } catch (error) {
-      next(error);
-    }
-  }
-
-  /**
-   * Update curriculum
-   * PUT /api/v1/subjects/curriculum/:curriculumId
-   */
-  static async updateCurriculum(req, res, next) {
-    try {
-      const { curriculumId } = req.params;
-
-      const curriculum = await subjectService.updateCurriculum(
-        req.user.schoolId,
-        curriculumId,
-        req.body,
-        req.user.userId
-      );
-
-      responseHelper.success(res, { curriculum }, 'Curriculum updated successfully');
-    } catch (error) {
+      logger.error('Error fetching curriculum', error);
       next(error);
     }
   }
 
   /**
    * Approve curriculum
-   * PATCH /api/v1/subjects/curriculum/:curriculumId/approve
    */
   static async approveCurriculum(req, res, next) {
     try {
       const { curriculumId } = req.params;
+      const schoolId = req.user.schoolId;
 
-      const curriculum = await subjectService.approveCurriculum(
-        req.user.schoolId,
-        curriculumId,
-        req.user.userId
+      const curriculum = await Curriculum.findOneAndUpdate(
+        { _id: curriculumId, schoolId },
+        { status: 'APPROVED', approvedBy: req.user.userId, approvedAt: new Date() },
+        { new: true }
       );
 
-      responseHelper.success(res, { curriculum }, 'Curriculum approved successfully');
+      if (!curriculum) throw new AppError('Curriculum not found', 404);
+
+      return responseHelper.success(res, curriculum, 'Curriculum approved successfully');
     } catch (error) {
+      logger.error('Error approving curriculum', error);
       next(error);
     }
   }
 
   /**
    * Activate curriculum
-   * PATCH /api/v1/subjects/curriculum/:curriculumId/activate
    */
   static async activateCurriculum(req, res, next) {
     try {
       const { curriculumId } = req.params;
+      const schoolId = req.user.schoolId;
 
-      const curriculum = await subjectService.activateCurriculum(
-        req.user.schoolId,
-        curriculumId,
-        req.user.userId
+      const curriculum = await Curriculum.findOneAndUpdate(
+        { _id: curriculumId, schoolId },
+        { status: 'ACTIVE', activatedAt: new Date() },
+        { new: true }
       );
 
-      responseHelper.success(res, { curriculum }, 'Curriculum activated successfully');
+      if (!curriculum) throw new AppError('Curriculum not found', 404);
+
+      return responseHelper.success(res, curriculum, 'Curriculum activated successfully');
     } catch (error) {
+      logger.error('Error activating curriculum', error);
       next(error);
     }
   }
 
-  // ============================================================
-  // TEACHER SUBJECT ASSIGNMENT
-  // ============================================================
-
   /**
    * Assign teacher to subject
-   * POST /api/v1/subjects/:subjectId/assign-teacher
    */
   static async assignTeacher(req, res, next) {
     try {
-      const assignment = await subjectService.assignTeacherToSubject(
-        req.user.schoolId,
-        req.body,
-        req.user.userId
+      const schoolId = req.user.schoolId;
+      const { subjectId, teacherId, classId, academicYear } = req.body;
+
+      if (!subjectId || !teacherId) {
+        throw new ValidationError('Subject ID and Teacher ID are required');
+      }
+
+      // Store as a field on the subject or in a separate collection
+      const subject = await Subject.findOneAndUpdate(
+        { _id: subjectId, schoolId },
+        { $addToSet: { assignedTeachers: teacherId } },
+        { new: true }
       );
 
-      responseHelper.created(res, { assignment }, 'Teacher assigned to subject successfully');
+      if (!subject) throw new AppError('Subject not found', 404);
+
+      return responseHelper.created(res, { subject }, 'Teacher assigned to subject successfully');
     } catch (error) {
+      logger.error('Error assigning teacher', error);
       next(error);
     }
   }
 
   /**
    * Get teacher subject assignments
-   * GET /api/v1/subjects/teacher/:teacherId/assignments
    */
   static async getTeacherAssignments(req, res, next) {
     try {
       const { teacherId } = req.params;
-      const { academicYear } = req.query;
+      const schoolId = req.user.schoolId;
 
-      const assignments = await subjectService.getTeacherSubjectAssignments(
-        req.user.schoolId,
-        teacherId,
-        academicYear
-      );
+      const subjects = await Subject.find({
+        schoolId,
+        assignedTeachers: teacherId,
+        status: 'ACTIVE'
+      }).lean().sort({ name: 1 });
 
-      responseHelper.success(res, { assignments }, 'Assignments retrieved successfully');
+      return responseHelper.success(res, subjects, 'Teacher assignments retrieved successfully');
     } catch (error) {
+      logger.error('Error fetching teacher assignments', error);
       next(error);
     }
   }
 
   /**
    * Remove teacher from subject
-   * DELETE /api/v1/subjects/assignment/:assignmentId
    */
   static async removeTeacher(req, res, next) {
     try {
       const { assignmentId } = req.params;
+      const schoolId = req.user.schoolId;
 
-      await subjectService.removeTeacherFromSubject(req.user.schoolId, assignmentId, req.user.userId);
+      // assignmentId here could be interpreted as subjectId for removal
+      const subject = await Subject.findOneAndUpdate(
+        { _id: assignmentId, schoolId },
+        { $set: { assignedTeachers: [] } },
+        { new: true }
+      );
 
-      responseHelper.success(res, null, 'Teacher removed from subject successfully');
+      if (!subject) throw new AppError('Assignment not found', 404);
+
+      return responseHelper.success(res, null, 'Teacher removed from subject successfully');
     } catch (error) {
+      logger.error('Error removing teacher', error);
       next(error);
     }
   }
 }
 
 module.exports = SubjectController;
+

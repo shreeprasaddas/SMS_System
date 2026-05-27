@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetClassesQuery, useDeleteClassMutation } from '../../store/api/classApi.js';
-import { ClassCard, ClassFilters } from '../../components/classes/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetClassesQuery, useDeleteClassMutation } from '@/store/api/classApi.js';
+import { ClassCard, ClassFilters } from '@/components/classes/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function ClassesPage() {

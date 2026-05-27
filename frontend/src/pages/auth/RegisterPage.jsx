@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, Link } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { useRegisterMutation } from '../../store/api/authApi.js';
-import { Button, Input, Card } from '../../components/common/index.js';
+import { useRegisterMutation } from '@/store/api/authApi.js';
+import { Button, Input, Card } from '@/components/common/index.js';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -14,9 +14,8 @@ function RegisterPage() {
   const onSubmit = async (data) => {
     try {
       const { confirmPassword, ...submitData } = data;
-      // Add required backend fields
-      submitData.role = 'STUDENT';
-      submitData.schoolId = 'test-school';
+      // The role is now selected via the form dropdown
+      submitData.schoolId = '6a15d2c61b7c0a9ac910ec7f'; // Default school ObjectId
       await register(submitData).unwrap();
       toast.success('Registration successful! Please login.');
       navigate('/auth/login');
@@ -52,6 +51,23 @@ function RegisterPage() {
                 required: 'Last name is required',
               })}
             />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Select Role (Testing purposes)
+            </label>
+            <select
+              {...formRegister('role', { required: 'Role is required' })}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+              defaultValue="STUDENT"
+            >
+              <option value="STUDENT">Student</option>
+              <option value="TEACHER">Teacher</option>
+              <option value="ADMIN">Admin</option>
+              <option value="PRINCIPAL">Principal</option>
+              <option value="PARENT">Parent</option>
+            </select>
           </div>
 
           <Input

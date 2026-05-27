@@ -197,8 +197,8 @@ biometricRecordSchema.pre('save', async function (next) {
 });
 
 // Indexes
-biometricRecordSchema.index({ schoolId, userId: 1 });
-biometricRecordSchema.index({ schoolId, biometricType: 1 });
+biometricRecordSchema.index({ schoolId: 1, userId: 1 });
+biometricRecordSchema.index({ schoolId: 1, biometricType: 1 });
 biometricRecordSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Verification success rate

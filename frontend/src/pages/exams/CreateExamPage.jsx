@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useCreateExamMutation } from '../../store/api/examApi.js';
-import { ExamForm } from '../../components/exams/index.js';
+import { useCreateExamMutation } from '@/store/api/examApi.js';
+import { ExamForm } from '@/components/exams/index.js';
 import toast from 'react-hot-toast';
 
 function CreateExamPage() {

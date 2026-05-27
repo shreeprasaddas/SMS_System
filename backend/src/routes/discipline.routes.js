@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const disciplineController = require('../controllers/discipline.controller');
-const { authenticate } = require('../middleware/authenticate.middleware');
-const { authorize } = require('../middleware/authorize.middleware');
-const { validate } = require('../middleware/validate.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const {
   reportIncidentSchema,
   updateIncidentSchema,
@@ -19,8 +18,6 @@ const {
 } = require('../validations/discipline.validation');
 
 // Apply authentication to all routes
-router.use(authenticate);
-
 // ============== INCIDENT ROUTES ==============
 
 /**

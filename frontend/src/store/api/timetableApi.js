@@ -1,7 +1,8 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { loginSuccess, logout } from '../slices/authSlice.js';
 
 const baseQuery = fetchBaseQuery({
-  baseUrl: '/api/v1',
+  baseUrl: import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api/v1',
   prepareHeaders: (headers, { getState }) => {
     const token = getState()?.auth?.token;
     if (token) {
@@ -11,12 +12,81 @@ const baseQuery = fetchBaseQuery({
   },
 });
 
+const baseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await baseQuery(args, api, extraOptions);
+
+  if (result.error?.status === 401) {
+    const refreshResult = await baseQuery(
+      { url: '/auth/refresh-token', method: 'POST' },
+      api,
+      extraOptions
+    );
+
+    if (refreshResult.data) {
+      const { token, refreshToken } = refreshResult.data.data;
+      api.dispatch(
+        loginSuccess({
+          user: api.getState().auth.user,
+          token,
+          refreshToken,
+        })
+      );
+      result = await baseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(logout());
+    }
+  }
+
+  return result;
+};
+
 export const timetableApi = createApi({
   reducerPath: 'timetableApi',
-  baseQuery,
-  tagTypes: ['Timetable'],
+  baseQuery: baseQueryWithReauth,
+  tagTypes: ['Timetable', 'PeriodConfig', 'TimeSlot'],
   endpoints: (builder) => ({
-    // Get all timetable entries with pagination and filters
+    // ==================== PERIOD CONFIGURATIONS ====================
+    createPeriodConfig: builder.mutation({
+      query: (data) => ({
+        url: '/timetables/period-configs',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['PeriodConfig'],
+    }),
+
+    getPeriodConfigs: builder.query({
+      query: (params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        return `/timetables/period-configs${queryString ? `?${queryString}` : ''}`;
+      },
+      providesTags: ['PeriodConfig'],
+    }),
+
+    getPeriodConfigById: builder.query({
+      query: (id) => `/timetables/period-configs/${id}`,
+      providesTags: ['PeriodConfig'],
+    }),
+
+    // ==================== TIME SLOTS ====================
+    createTimeSlot: builder.mutation({
+      query: (data) => ({
+        url: '/timetables/time-slots',
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['TimeSlot'],
+    }),
+
+    getTimeSlots: builder.query({
+      query: (params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        return `/timetables/time-slots${queryString ? `?${queryString}` : ''}`;
+      },
+      providesTags: ['TimeSlot'],
+    }),
+
+    // ==================== TIMETABLES ====================
     getTimetables: builder.query({
       query: ({ page = 1, limit = 12, search = '', class: classId = '', teacher = '', day = '' } = {}) => {
         const params = new URLSearchParams();
@@ -31,13 +101,11 @@ export const timetableApi = createApi({
       providesTags: ['Timetable'],
     }),
 
-    // Get single timetable entry by ID
     getTimetableById: builder.query({
       query: (id) => `/timetables/${id}`,
       providesTags: (result, error, id) => [{ type: 'Timetable', id }],
     }),
 
-    // Create new timetable entry
     createTimetable: builder.mutation({
       query: (data) => ({
         url: '/timetables',
@@ -47,7 +115,6 @@ export const timetableApi = createApi({
       invalidatesTags: ['Timetable'],
     }),
 
-    // Update timetable entry
     updateTimetable: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/timetables/${id}`,
@@ -60,20 +127,104 @@ export const timetableApi = createApi({
       ],
     }),
 
-    // Partial update timetable
+    publishTimetable: builder.mutation({
+      query: (id) => ({
+        url: `/timetables/${id}/publish`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    activateTimetable: builder.mutation({
+      query: (id) => ({
+        url: `/timetables/${id}/activate`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    getTimetableStatistics: builder.query({
+      query: (id) => `/timetables/${id}/statistics`,
+      providesTags: ['Timetable'],
+    }),
+
+    // ==================== TEACHER TIMETABLES ====================
+    createTeacherTimetable: builder.mutation({
+      query: ({ teacherId, ...data }) => ({
+        url: `/timetables/teachers/${teacherId}`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    getTeacherTimetable: builder.query({
+      query: (teacherId) => `/timetables/teachers/${teacherId}`,
+      providesTags: ['Timetable'],
+    }),
+
+    confirmTeacherTimetable: builder.mutation({
+      query: (teacherId) => ({
+        url: `/timetables/teachers/${teacherId}/confirm`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    // ==================== TIMETABLE CHANGES ====================
+    requestTimetableChange: builder.mutation({
+      query: ({ timetableId, ...data }) => ({
+        url: `/timetables/${timetableId}/changes`,
+        method: 'POST',
+        body: data,
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    getTimetableChanges: builder.query({
+      query: (params = {}) => {
+        const queryString = new URLSearchParams(params).toString();
+        return `/timetables/changes${queryString ? `?${queryString}` : ''}`;
+      },
+      providesTags: ['Timetable'],
+    }),
+
+    approveTimetableChange: builder.mutation({
+      query: ({ changeId, ...data }) => ({
+        url: `/timetables/changes/${changeId}/approve`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    rejectTimetableChange: builder.mutation({
+      query: ({ changeId, ...data }) => ({
+        url: `/timetables/changes/${changeId}/reject`,
+        method: 'PUT',
+        body: data,
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    implementTimetableChange: builder.mutation({
+      query: (changeId) => ({
+        url: `/timetables/changes/${changeId}/implement`,
+        method: 'PUT',
+      }),
+      invalidatesTags: ['Timetable'],
+    }),
+
+    // ==================== LEGACY COMPAT ====================
     patchTimetable: builder.mutation({
       query: ({ id, ...data }) => ({
         url: `/timetables/${id}`,
-        method: 'PATCH',
+        method: 'PUT',
         body: data,
       }),
-      invalidatesTags: (result, error, { id }) => [
-        { type: 'Timetable', id },
-        'Timetable',
-      ],
+      invalidatesTags: ['Timetable'],
     }),
 
-    // Delete timetable entry
     deleteTimetable: builder.mutation({
       query: (id) => ({
         url: `/timetables/${id}`,
@@ -82,54 +233,42 @@ export const timetableApi = createApi({
       invalidatesTags: ['Timetable'],
     }),
 
-    // Get timetable for a specific class
     getClassTimetable: builder.query({
-      query: (classId) => `/timetables/class/${classId}`,
+      query: (classId) => `/timetables?class=${classId}`,
       providesTags: ['Timetable'],
     }),
 
-    // Get timetable for a specific teacher
-    getTeacherTimetable: builder.query({
-      query: (teacherId) => `/timetables/teacher/${teacherId}`,
-      providesTags: ['Timetable'],
-    }),
-
-    // Get calendar view (all timetables grouped by day/time)
     getTimetableCalendar: builder.query({
       query: (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
-        return `/timetables/calendar${queryString ? '?' + queryString : ''}`;
+        return `/timetables${queryString ? `?${queryString}` : ''}`;
       },
       providesTags: ['Timetable'],
     }),
 
-    // Bulk create timetables for a class (paste schedule)
     bulkCreateTimetables: builder.mutation({
       query: (data) => ({
-        url: '/timetables/bulk',
+        url: '/timetables',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: ['Timetable'],
     }),
 
-    // Get timetable statistics
     getTimetableStats: builder.query({
-      query: () => '/timetables/stats',
+      query: () => '/timetables?limit=1',
       providesTags: ['Timetable'],
     }),
 
-    // Get timetable for a specific day
     getTimetableByDay: builder.query({
-      query: (day) => `/timetables/day/${day}`,
+      query: (day) => `/timetables?day=${day}`,
       providesTags: ['Timetable'],
     }),
 
-    // Generate timetable report
     getTimetableReport: builder.query({
       query: (params = {}) => {
         const queryString = new URLSearchParams(params).toString();
-        return `/timetables/report${queryString ? '?' + queryString : ''}`;
+        return `/timetables${queryString ? `?${queryString}` : ''}`;
       },
       providesTags: ['Timetable'],
     }),
@@ -137,14 +276,30 @@ export const timetableApi = createApi({
 });
 
 export const {
+  useCreatePeriodConfigMutation,
+  useGetPeriodConfigsQuery,
+  useGetPeriodConfigByIdQuery,
+  useCreateTimeSlotMutation,
+  useGetTimeSlotsQuery,
   useGetTimetablesQuery,
   useGetTimetableByIdQuery,
   useCreateTimetableMutation,
   useUpdateTimetableMutation,
+  usePublishTimetableMutation,
+  useActivateTimetableMutation,
+  useGetTimetableStatisticsQuery,
+  useCreateTeacherTimetableMutation,
+  useGetTeacherTimetableQuery,
+  useConfirmTeacherTimetableMutation,
+  useRequestTimetableChangeMutation,
+  useGetTimetableChangesQuery,
+  useApproveTimetableChangeMutation,
+  useRejectTimetableChangeMutation,
+  useImplementTimetableChangeMutation,
+  // Legacy compat
   usePatchTimetableMutation,
   useDeleteTimetableMutation,
   useGetClassTimetableQuery,
-  useGetTeacherTimetableQuery,
   useGetTimetableCalendarQuery,
   useBulkCreateTimetablesMutation,
   useGetTimetableStatsQuery,

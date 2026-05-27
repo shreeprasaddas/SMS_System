@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useGetExamsQuery, useDeleteExamMutation } from '../../store/api/examApi.js';
-import { ExamCard, ExamFilters } from '../../components/exams/index.js';
-import { Button, Spinner } from '../../components/common/index.js';
+import { useGetExamsQuery, useDeleteExamMutation } from '@/store/api/examApi.js';
+import { ExamCard, ExamFilters } from '@/components/exams/index.js';
+import { Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function ExamsPage() {

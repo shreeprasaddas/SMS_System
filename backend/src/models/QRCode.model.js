@@ -160,7 +160,7 @@ qrCodeSchema.pre('save', async function (next) {
 });
 
 // Indexes
-qrCodeSchema.index({ schoolId, status: 1 });
+qrCodeSchema.index({ schoolId: 1, status: 1 });
 qrCodeSchema.index({ qrCodeId: 1, schoolId: 1 });
 qrCodeSchema.index({ code: 1, schoolId: 1 });
 qrCodeSchema.index({ 'validityDetails.expiryDate': 1, schoolId: 1 });

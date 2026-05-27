@@ -74,7 +74,7 @@ exports.recordIncomeSchema = Joi.object({
   description: Joi.string().min(5).max(500).required(),
   amount: Joi.number().min(0).required(),
   incomeDate: Joi.date().required(),
-  receiptNumber: Joi.string().unique(),
+  receiptNumber: Joi.string(),
   paymentMethod: Joi.string()
     .valid('CASH', 'CHEQUE', 'ONLINE', 'BANK_TRANSFER', 'CREDIT_CARD', 'OTHER')
     .required(),

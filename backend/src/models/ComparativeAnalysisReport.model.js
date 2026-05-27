@@ -286,7 +286,7 @@ comparativeAnalysisReportSchema.pre('save', async function (next) {
 });
 
 // Indexes
-comparativeAnalysisReportSchema.index({ schoolId, 'analysisPeriod.academicYear': 1 });
+comparativeAnalysisReportSchema.index({ schoolId: 1, 'analysisPeriod.academicYear': 1 });
 comparativeAnalysisReportSchema.index({ code: 1, schoolId: 1 });
 
 // Virtual: Report recency

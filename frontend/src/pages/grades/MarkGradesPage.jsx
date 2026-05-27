@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMarkBulkGradesMutation } from '../../store/api/gradeApi.js';
-import { Card, Button, Spinner } from '../../components/common/index.js';
+import { useMarkBulkGradesMutation } from '@/store/api/gradeApi.js';
+import { useGetClassesQuery } from '@/store/api/classApi.js';
+import { useGetSubjectsQuery } from '@/store/api/subjectApi.js';
+import { useGetStudentsQuery } from '@/store/api/studentApi.js';
+import { Card, Button, Spinner } from '@/components/common/index.js';
 import toast from 'react-hot-toast';
 
 function MarkGradesPage() {
@@ -15,22 +18,35 @@ function MarkGradesPage() {
     grades: [],
   });
 
-  // Mock students data - in real app, fetch from API
-  const mockStudents = [
-    { _id: '1', name: 'Alice Johnson', rollNumber: '001' },
-    { _id: '2', name: 'Bob Smith', rollNumber: '002' },
-    { _id: '3', name: 'Charlie Brown', rollNumber: '003' },
-  ];
-
-  const [studentGrades, setStudentGrades] = useState(
-    mockStudents.map(s => ({
-      studentId: s._id,
-      studentName: s.name,
-      marks: '',
-      maxMarks: 100,
-      feedback: '',
-    }))
+  const { data: classesData, isLoading: classesLoading } = useGetClassesQuery({ limit: 100 });
+  const { data: subjectsData, isLoading: subjectsLoading } = useGetSubjectsQuery({ limit: 100 });
+  const { data: studentsData, isLoading: studentsLoading } = useGetStudentsQuery(
+    { classId: formData.classId, limit: 100 },
+    { skip: !formData.classId }
   );
+
+  const classes = classesData?.data?.classes || classesData?.data || [];
+  const subjects = subjectsData?.data?.subjects || subjectsData?.data || [];
+  const students = studentsData?.data?.students || studentsData?.data || [];
+
+  const [studentGrades, setStudentGrades] = useState([]);
+
+  useEffect(() => {
+    if (students && students.length > 0) {
+      setStudentGrades(
+        students.map(s => ({
+          studentId: s._id,
+          studentName: `${s.firstName} ${s.lastName}`,
+          rollNumber: s.rollNumber || '—',
+          marks: '',
+          maxMarks: 100,
+          feedback: '',
+        }))
+      );
+    } else {
+      setStudentGrades([]);
+    }
+  }, [students]);
 
   const handleGradeChange = (index, field, value) => {
     const updated = [...studentGrades];
@@ -40,10 +56,23 @@ function MarkGradesPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.classId || !formData.subjectId) {
+      toast.error('Please select class and subject');
+      return;
+    }
+    if (studentGrades.length === 0) {
+      toast.error('No students found in the selected class');
+      return;
+    }
     try {
       await markBulkGrades({
         ...formData,
-        grades: studentGrades,
+        grades: studentGrades.map(g => ({
+          studentId: g.studentId,
+          marks: Number(g.marks),
+          maxMarks: Number(g.maxMarks),
+          feedback: g.feedback,
+        })),
       }).unwrap();
       toast.success('Grades marked successfully');
       navigate('/grades');
@@ -75,9 +104,12 @@ function MarkGradesPage() {
                 className="w-full px-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Select Class</option>
-                <option value="CLASS_1">Class 1</option>
-                <option value="CLASS_10">Class 10</option>
-                <option value="CLASS_12">Class 12</option>
+                {classesLoading && <option disabled>Loading classes...</option>}
+                {classes.map((cls) => (
+                  <option key={cls._id} value={cls._id}>
+                    {cls.name || cls.className} {cls.section ? `- ${cls.section}` : ''}
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -92,9 +124,12 @@ function MarkGradesPage() {
                 className="w-full px-4 py-2 border border-secondary-300 rounded-lg focus:ring-2 focus:ring-primary-500"
               >
                 <option value="">Select Subject</option>
-                <option value="MATH">Mathematics</option>
-                <option value="ENGLISH">English</option>
-                <option value="SCIENCE">Science</option>
+                {subjectsLoading && <option disabled>Loading subjects...</option>}
+                {subjects.map((sub) => (
+                  <option key={sub._id} value={sub._id}>
+                    {sub.name} ({sub.code})
+                  </option>
+                ))}
               </select>
             </div>
 
@@ -119,64 +154,86 @@ function MarkGradesPage() {
         {/* Grades Table */}
         <Card>
           <h3 className="text-lg font-semibold text-secondary-900 mb-4">Student Grades</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-secondary-200">
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
-                    Roll No
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
-                    Student Name
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
-                    Marks
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
-                    Max Marks
-                  </th>
-                  <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
-                    Feedback
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {studentGrades.map((student, index) => (
-                  <tr key={student.studentId} className="border-b border-secondary-100 hover:bg-secondary-50">
-                    <td className="px-4 py-3 text-sm text-secondary-600">
-                      {mockStudents[index]?.rollNumber}
-                    </td>
-                    <td className="px-4 py-3 text-sm font-medium text-secondary-900">
-                      {student.studentName}
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="number"
-                        min="0"
-                        max={student.maxMarks}
-                        value={student.marks}
-                        onChange={(e) => handleGradeChange(index, 'marks', e.target.value)}
-                        className="w-20 px-2 py-1 border border-secondary-300 rounded text-center"
-                        placeholder="0"
-                      />
-                    </td>
-                    <td className="px-4 py-3 text-sm text-secondary-600">
-                      {student.maxMarks}
-                    </td>
-                    <td className="px-4 py-3">
-                      <input
-                        type="text"
-                        value={student.feedback}
-                        onChange={(e) => handleGradeChange(index, 'feedback', e.target.value)}
-                        className="w-full px-2 py-1 border border-secondary-300 rounded text-sm"
-                        placeholder="Add feedback..."
-                      />
-                    </td>
+          {!formData.classId ? (
+            <div className="text-center py-10 text-gray-400">
+              <p className="text-4xl mb-2">📋</p>
+              <p>Select a class and subject to input student grades</p>
+            </div>
+          ) : studentsLoading ? (
+            <div className="flex justify-center py-10"><Spinner size="lg" /></div>
+          ) : studentGrades.length === 0 ? (
+            <div className="text-center py-10 text-gray-400">
+              <p>No students enrolled in this class yet</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className="border-b border-secondary-200">
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
+                      Roll No
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
+                      Student Name
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
+                      Marks
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
+                      Max Marks
+                    </th>
+                    <th className="px-4 py-3 text-left text-sm font-semibold text-secondary-900">
+                      Feedback
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody>
+                  {studentGrades.map((student, index) => (
+                    <tr key={student.studentId} className="border-b border-secondary-100 hover:bg-secondary-50">
+                      <td className="px-4 py-3 text-sm text-secondary-600">
+                        {student.rollNumber}
+                      </td>
+                      <td className="px-4 py-3 text-sm font-medium text-secondary-900">
+                        {student.studentName}
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="number"
+                          min="0"
+                          max={student.maxMarks}
+                          value={student.marks}
+                          onChange={(e) => handleGradeChange(index, 'marks', e.target.value)}
+                          className="w-20 px-2 py-1 border border-secondary-300 rounded text-center"
+                          placeholder="0"
+                          required
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-sm text-secondary-600">
+                        <input
+                          type="number"
+                          min="1"
+                          value={student.maxMarks}
+                          onChange={(e) => handleGradeChange(index, 'maxMarks', e.target.value)}
+                          className="w-20 px-2 py-1 border border-secondary-300 rounded text-center"
+                          placeholder="100"
+                          required
+                        />
+                      </td>
+                      <td className="px-4 py-3">
+                        <input
+                          type="text"
+                          value={student.feedback}
+                          onChange={(e) => handleGradeChange(index, 'feedback', e.target.value)}
+                          className="w-full px-2 py-1 border border-secondary-300 rounded text-sm"
+                          placeholder="Add feedback..."
+                        />
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </Card>
 
         {/* Action Buttons */}
@@ -186,6 +243,7 @@ function MarkGradesPage() {
             variant="primary"
             size="md"
             loading={isLoading}
+            disabled={studentGrades.length === 0}
           >
             Mark Grades
           </Button>

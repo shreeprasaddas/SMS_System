@@ -5,9 +5,9 @@
 
 const ReportCard = require('../models/academics/ReportCard.model');
 const Grade = require('../models/academics/Grade.model');
-const StudentAttendance = require('../models/academics/StudentAttendance.model');
-const Class = require('../models/academics/Class.model');
-const User = require('../models/auth/User.model');
+const StudentAttendance = require('../models/attendance/StudentAttendance.model');
+const Class = require('../models/academic/Class.model');
+const User = require('../models/user/User.model');
 const { AppError } = require('../utils/errorHelper');
 
 class ReportCardService {

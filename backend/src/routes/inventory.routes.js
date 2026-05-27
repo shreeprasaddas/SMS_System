@@ -6,11 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const inventoryController = require('../controllers/inventory.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
 
 // Middleware stack
-router.use(authenticate);
-
 // Category routes
 router.post('/categories', authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']), inventoryController.createCategory);
 router.get('/categories', authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT', 'TEACHER']), inventoryController.getAllCategories);

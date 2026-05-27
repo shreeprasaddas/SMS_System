@@ -125,10 +125,10 @@ const alumniDonationSchema = new mongoose.Schema(
 );
 
 // Indexes for multi-tenancy and filtering
-alumniDonationSchema.index({ schoolId, donationStatus: 1 });
-alumniDonationSchema.index({ schoolId, alumniId: 1 });
-alumniDonationSchema.index({ schoolId, donationDate: 1 });
-alumniDonationSchema.index({ schoolId, donationType: 1 });
+alumniDonationSchema.index({ schoolId: 1, donationStatus: 1 });
+alumniDonationSchema.index({ schoolId: 1, alumniId: 1 });
+alumniDonationSchema.index({ schoolId: 1, donationDate: 1 });
+alumniDonationSchema.index({ schoolId: 1, donationType: 1 });
 
 // Virtual for donation display amount
 alumniDonationSchema.virtual('displayAmount').get(function () {

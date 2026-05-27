@@ -147,10 +147,10 @@ const alumniMentorSchema = new mongoose.Schema(
 );
 
 // Indexes for multi-tenancy and filtering
-alumniMentorSchema.index({ schoolId, status: 1 });
-alumniMentorSchema.index({ schoolId, alumniId: 1 });
-alumniMentorSchema.index({ schoolId, menteeId: 1 });
-alumniMentorSchema.index({ schoolId, mentorshipType: 1 });
+alumniMentorSchema.index({ schoolId: 1, status: 1 });
+alumniMentorSchema.index({ schoolId: 1, alumniId: 1 });
+alumniMentorSchema.index({ schoolId: 1, menteeId: 1 });
+alumniMentorSchema.index({ schoolId: 1, mentorshipType: 1 });
 
 // Virtual for completion percentage
 alumniMentorSchema.virtual('completionPercentage').get(function () {

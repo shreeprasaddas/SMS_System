@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const alumniController = require('../controllers/alumni.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const alumniValidation = require('../validations/alumni.validation');
-
-// Middleware: All routes require authentication
-router.use(authenticate);
 
 /**
  * ALUMNI - Profile Management
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(alumniValidation.createAlumniSchema, 'body'),
+  validate(alumniValidation.createAlumniSchema, 'body'),
   alumniController.createAlumni
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(alumniValidation.listAlumniSchema, 'query'),
+  validate(alumniValidation.listAlumniSchema, 'query'),
   alumniController.getAllAlumni
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.put(
   '/:id',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(alumniValidation.createAlumniSchema, 'body'),
+  validate(alumniValidation.createAlumniSchema, 'body'),
   alumniController.updateAlumni
 );
 
@@ -56,7 +53,7 @@ router.put(
 router.post(
   '/events/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(alumniValidation.createEventSchema, 'body'),
+  validate(alumniValidation.createEventSchema, 'body'),
   alumniController.createEvent
 );
 
@@ -64,7 +61,7 @@ router.post(
 router.get(
   '/events/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(alumniValidation.listEventsSchema, 'query'),
+  validate(alumniValidation.listEventsSchema, 'query'),
   alumniController.getEvents
 );
 
@@ -72,7 +69,7 @@ router.get(
 router.post(
   '/events/:id/register',
   authorize(['ADMIN', 'PRINCIPAL', 'STUDENT']),
-  validateRequest(alumniValidation.registerForEventSchema, 'body'),
+  validate(alumniValidation.registerForEventSchema, 'body'),
   alumniController.registerForEvent
 );
 
@@ -84,7 +81,7 @@ router.post(
 router.post(
   '/donations/record',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(alumniValidation.recordDonationSchema, 'body'),
+  validate(alumniValidation.recordDonationSchema, 'body'),
   alumniController.recordDonation
 );
 
@@ -92,7 +89,7 @@ router.post(
 router.get(
   '/donations/list',
   authorize(['ADMIN', 'PRINCIPAL', 'ACCOUNTANT']),
-  validateRequest(alumniValidation.listDonationsSchema, 'query'),
+  validate(alumniValidation.listDonationsSchema, 'query'),
   alumniController.getDonations
 );
 
@@ -104,7 +101,7 @@ router.get(
 router.post(
   '/jobs/post',
   authorize(['ADMIN', 'PRINCIPAL', 'STUDENT']),
-  validateRequest(alumniValidation.postJobSchema, 'body'),
+  validate(alumniValidation.postJobSchema, 'body'),
   alumniController.postJob
 );
 
@@ -112,7 +109,7 @@ router.post(
 router.get(
   '/jobs/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(alumniValidation.listJobsSchema, 'query'),
+  validate(alumniValidation.listJobsSchema, 'query'),
   alumniController.getJobPostings
 );
 
@@ -124,7 +121,7 @@ router.get(
 router.post(
   '/mentorships/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(alumniValidation.createMentorshipSchema, 'body'),
+  validate(alumniValidation.createMentorshipSchema, 'body'),
   alumniController.createMentorship
 );
 
@@ -132,7 +129,7 @@ router.post(
 router.get(
   '/mentorships/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(alumniValidation.listMentorshipsSchema, 'query'),
+  validate(alumniValidation.listMentorshipsSchema, 'query'),
   alumniController.getMentorships
 );
 

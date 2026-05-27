@@ -72,7 +72,7 @@ const staffAttendanceSchema = new mongoose.Schema(
 staffAttendanceSchema.pre('save', async function(next) {
   if (!this.code) {
     const year = new Date().getFullYear();
-    const count = await mongoose.model('StaffAttendance').countDocuments({ schoolId: this.schoolId });
+    const count = await mongoose.model('HRStaffAttendance').countDocuments({ schoolId: this.schoolId });
     this.code = `ATTD-${year}-${String(count + 1).padStart(5, '0')}`;
   }
   next();
@@ -83,4 +83,4 @@ staffAttendanceSchema.index({ schoolId: 1, staffId: 1, attendanceDate: 1 });
 staffAttendanceSchema.index({ schoolId: 1, attendanceStatus: 1 });
 staffAttendanceSchema.index({ schoolId: 1, attendanceDate: 1 });
 
-module.exports = mongoose.model('StaffAttendance', staffAttendanceSchema);
+module.exports = mongoose.model('HRStaffAttendance', staffAttendanceSchema);

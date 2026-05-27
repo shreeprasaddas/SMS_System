@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Button } from '../common/index.js';
+import { Button } from '@/components/common';
 
 function StudentCard({ student, onEdit, onDelete, onView }) {
   const handleDelete = () => {
@@ -36,7 +36,7 @@ function StudentCard({ student, onEdit, onDelete, onView }) {
       <div className="space-y-2 mb-4 text-sm text-gray-600">
         <p>📧 {student.email}</p>
         <p>📞 {student.phone || 'N/A'}</p>
-        <p>🎓 Class {student.classId || 'N/A'}</p>
+        <p>🎓 Class {student.class?.name || student.className || student.class || 'N/A'}</p>
       </div>
 
       <div className="flex gap-2">

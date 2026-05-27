@@ -120,4 +120,7 @@ module.exports = {
   rejectExpenseSchema,
   getExpensesSchema,
   expenseReportSchema,
+  // Aliases used by expense.routes.js
+  submitExpenseSchema: approveExpenseSchema,   // submit uses same optional-remarks body
+  recordPaymentSchema: createExpenseSchema,    // payment body reuses general expense shape
 };

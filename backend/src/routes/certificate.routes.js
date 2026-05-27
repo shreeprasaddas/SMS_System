@@ -6,12 +6,9 @@
 const express = require('express');
 const router = express.Router();
 const certificateController = require('../controllers/certificate.controller');
-const { authenticate, authorize } = require('../middleware/auth.middleware');
-const { validateRequest } = require('../middleware/validation.middleware');
+const { authorize } = require('../middleware/authorization.middleware');
+const { validate } = require('../middleware/validation.middleware');
 const certificateValidation = require('../validations/certificate.validation');
-
-// Middleware: All routes require authentication
-router.use(authenticate);
 
 /**
  * CERTIFICATES - Master Certificate Management
@@ -21,7 +18,7 @@ router.use(authenticate);
 router.post(
   '/',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(certificateValidation.createCertificateSchema, 'body'),
+  validate(certificateValidation.createCertificateSchema, 'body'),
   certificateController.createCertificate
 );
 
@@ -29,7 +26,7 @@ router.post(
 router.get(
   '/',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(certificateValidation.listCertificatesSchema, 'query'),
+  validate(certificateValidation.listCertificatesSchema, 'query'),
   certificateController.getAllCertificates
 );
 
@@ -44,7 +41,7 @@ router.get(
 router.put(
   '/:id',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(certificateValidation.createCertificateSchema, 'body'),
+  validate(certificateValidation.createCertificateSchema, 'body'),
   certificateController.updateCertificate
 );
 
@@ -56,7 +53,7 @@ router.put(
 router.post(
   '/templates/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(certificateValidation.createTemplateSchema, 'body'),
+  validate(certificateValidation.createTemplateSchema, 'body'),
   certificateController.createTemplate
 );
 
@@ -64,7 +61,7 @@ router.post(
 router.get(
   '/templates/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(certificateValidation.listTemplatesSchema, 'query'),
+  validate(certificateValidation.listTemplatesSchema, 'query'),
   certificateController.getAllTemplates
 );
 
@@ -76,7 +73,7 @@ router.get(
 router.post(
   '/issue',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(certificateValidation.issueCertificateSchema, 'body'),
+  validate(certificateValidation.issueCertificateSchema, 'body'),
   certificateController.issueCertificate
 );
 
@@ -84,7 +81,7 @@ router.post(
 router.get(
   '/students/:id',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(certificateValidation.listStudentCertificatesSchema, 'query'),
+  validate(certificateValidation.listStudentCertificatesSchema, 'query'),
   certificateController.getStudentCertificates
 );
 
@@ -92,7 +89,7 @@ router.get(
 router.patch(
   '/:id/distribute',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER']),
-  validateRequest(certificateValidation.distributeCertificateSchema, 'body'),
+  validate(certificateValidation.distributeCertificateSchema, 'body'),
   certificateController.distributeCertificate
 );
 
@@ -111,7 +108,7 @@ router.patch(
 router.post(
   '/events/create',
   authorize(['ADMIN', 'PRINCIPAL']),
-  validateRequest(certificateValidation.createEventSchema, 'body'),
+  validate(certificateValidation.createEventSchema, 'body'),
   certificateController.createEvent
 );
 
@@ -119,7 +116,7 @@ router.post(
 router.get(
   '/events/list',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(certificateValidation.listEventsSchema, 'query'),
+  validate(certificateValidation.listEventsSchema, 'query'),
   certificateController.getEvents
 );
 
@@ -127,7 +124,7 @@ router.get(
 router.post(
   '/events/:id/register',
   authorize(['ADMIN', 'PRINCIPAL', 'TEACHER', 'STUDENT']),
-  validateRequest(certificateValidation.registerAttendeeSchema, 'body'),
+  validate(certificateValidation.registerAttendeeSchema, 'body'),
   certificateController.registerEventAttendee
 );
 
@@ -138,7 +135,7 @@ router.post(
 // POST: Verify certificate
 router.post(
   '/verify',
-  validateRequest(certificateValidation.verifyCertificateSchema, 'body'),
+  validate(certificateValidation.verifyCertificateSchema, 'body'),
   certificateController.verifyCertificate
 );
 
