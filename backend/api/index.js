@@ -22,6 +22,8 @@ const ensureDBConnection = async () => {
 
 // Wrap the Express app for Vercel
 module.exports = async (req, res) => {
-  await ensureDBConnection();
+  if (req.url !== '/health' && req.url !== '/api/v1/health') {
+    await ensureDBConnection();
+  }
   return app(req, res);
 };
